@@ -1,0 +1,73 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.dict.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See:
+    https://docs.python.org/3/library/stdtypes.html#mapping-types-dict
+    https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+*/
+::class dict.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_newEmptyDict
+        expose py
+        dict = py~dict
+        actual = py~len(dict)
+        self~assertSame(0, actual)
+
+    ::method test_set
+        expose py
+        dict = py~dict
+        dict['one'] = py~int(1)
+        dict['two'] = py~int(2)
+        dict['three'] = py~int(3)
+
+        actual = py~len(dict)
+
+        self~assertSame(3, actual)
+
+    ::method test_get
+        expose py
+        dict = py~dict
+        dict['one'] = py~int(1)
+        dict['two'] = py~int(2)
+        dict['three'] = py~int(3)
+
+        actual = dict['two']
+
+        self~assertSame(2, actual)
+
+    ::method test_del
+        expose py
+        dict = py~dict
+        dict['one'] = py~int(1)
+        dict['two'] = py~int(2)
+        dict['three'] = py~int(3)
+
+        dict~__delitem__('two')
+
+        self~assertFalse(dict~__contains__('two'))
+
+    ::method test_contains
+        expose py
+        dict = py~dict
+        dict['one'] = py~int(1)
+        dict['two'] = py~int(2)
+        dict['three'] = py~int(3)
+
+        self~assertTrue(dict~__contains__('two'))

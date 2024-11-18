@@ -1,0 +1,110 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.list.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See:
+    https://docs.python.org/3/library/stdtypes.html#list
+    https://docs.python.org/3/tutorial/introduction.html#lists
+*/
+::class list.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_newEmptyList_usingBrackets
+        expose py
+        list = py[]
+        actual = py~len(list)
+        self~assertSame(0, actual)
+
+    ::method test_newEmptyList_usingConstructor
+        expose py
+        list = py~list
+        actual = py~len(list)
+        self~assertSame(0, actual)
+
+    ::method test_newNonEmptyList_usingBrackets
+        expose py
+        list = py['a', 'b', 'c']
+        actual = py~len(list)
+        self~assertSame(3, actual)
+
+    ::method test_newNonEmptyList_usingConstructor
+        expose py
+        stop = py~int(3)
+        iterable = py~range(stop)
+        list = py~list(iterable)
+
+        actual = py~len(list)
+
+        self~assertSame(3, actual)
+
+    ::method test_indexing_get
+        expose py
+        list = py['a', 'b', 'c']
+        index = py~int(1)
+
+        actual = list[index]
+
+        self~assertSame('b', actual)
+
+    ::method test_indexing_set
+        expose py
+        list = py['a', 'b', 'c']
+        index = py~int(1)
+
+        list[index] = 'bravo'
+
+        self~assertSame('bravo', list[index])
+
+    ::method test_append
+        expose py
+        list = py[]
+        list~append('a')
+        list~append('b')
+        list~append('c')
+
+        actual = py~len(list)
+
+        self~assertSame(3, actual)
+
+    ::method test_append_differentTypes
+        expose py
+        list = py[]
+        list~append('a')
+        list~append(py~str('a'))
+        list~append(py~int(1))
+        list~append(py~float(1.0))
+        list~append(py~True)
+        list~append(py~None)
+        list~append(py['a', 'b', 'c'])
+
+        actual = py~len(list)
+
+        self~assertSame(7, actual)
+
+    ::method test_iteration
+        expose py
+        list = py['a', 'b', 'c']
+
+        concat = ''
+
+        do i=0 to 2
+            index = py~int(i)
+            concat ||= list[index]
+        end
+
+        self~assertSame('abc', concat)

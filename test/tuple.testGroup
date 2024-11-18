@@ -1,0 +1,46 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.tuple.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See:
+    https://docs.python.org/3/library/stdtypes.html#tuples
+    https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences
+*/
+::class tuple.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_newEmptyTuple
+        expose py
+        tuple = py~tuple
+        actual = py~len(tuple)
+        self~assertSame(0, actual)
+
+    ::method test_newNonEmptyTuple_fromIterable
+        expose py
+        tuple = py~tuple(py['a', 'b', 'c'])
+        actual = py~len(tuple)
+        self~assertSame(3, actual)
+
+    ::method test_indexing_get
+        expose py
+        tuple = py~tuple(py['a', 'b', 'c'])
+
+        index = py~int(1)
+        actual = tuple[index]
+
+        self~assertSame('b', actual)

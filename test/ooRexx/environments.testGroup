@@ -1,0 +1,51 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.environments.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+
+/*
+    The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
+*/
+::class environments.testGroup public subclass ooTestCase
+    ::method test_localEnvironment_notInstanceScoped
+        a = .Test~new
+        b = .Test~new
+
+        a~setLocal('hello, world')
+        actual = b~getLocal
+
+        self~assertSame('hello, world', actual)
+
+    ::method test_contextPackageLocalEnvironment_notInstanceScoped
+        a = .Test~new
+        b = .Test~new
+
+        a~setContextPackageLocal('hello, world')
+        actual = b~getContextPackageLocal
+
+        self~assertSame('hello, world', actual)
+
+::class Test
+    ::method setLocal
+        use arg value
+        .local~x = value
+
+    ::method getLocal
+        return .x
+
+    ::method setContextPackageLocal
+        use arg value
+        .context~package~local~y = value
+
+    ::method getContextPackageLocal
+        return .y

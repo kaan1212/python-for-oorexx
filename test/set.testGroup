@@ -1,0 +1,127 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.set.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See:
+    https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
+    https://docs.python.org/3/tutorial/datastructures.html#sets
+*/
+::class set.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_newEmptySet
+        expose py
+        set = py~set
+        actual = py~len(set)
+        self~assertSame(0, actual)
+
+    ::method test_newNonEmptySet_fromIterableString
+        expose py
+        set = py~set('foobar')
+        actual = py~len(set)
+        self~assertSame(5, actual)
+
+    ::method test_newNonEmptySet_fromIterableList
+        expose py
+        set = py~set(py['a', 'b', 'c'])
+        actual = py~len(set)
+        self~assertSame(3, actual)
+
+    ::method test_add
+        expose py
+        set = py~set
+        set~add('a')
+        set~add('b')
+        set~add('c')
+
+        actual = py~len(set)
+
+        self~assertSame(3, actual)
+
+    ::method test_remove
+        expose py
+        set = py~set(py['a', 'b', 'c'])
+        set~remove('c')
+
+        actual = py~len(set)
+
+        self~assertSame(2, actual)
+
+    ::method test_contains
+        expose py
+        set = py~set(py['a', 'b', 'c'])
+        actual = set~__contains__('a')
+        self~assertTrue(actual)
+
+    ::method test_containsNot
+        expose py
+        set = py~set(py['a', 'b', 'c'])
+        actual = set~__contains__('d')
+        self~assertFalse(actual)
+
+    ::method test_union
+        expose py
+        set1 = py~set(py['a', 'b', 'c'])
+        set2 = py~set(py['c', 'd', 'e'])
+        union = set1~union(set2)
+
+        actual = py~len(union)
+        self~assertSame(5, actual)
+
+    ::method test_intersection
+        expose py
+        set1 = py~set(py['a', 'b', 'c'])
+        set2 = py~set(py['c', 'd', 'e'])
+        intersection = set1~intersection(set2)
+
+        actual = py~len(intersection)
+        self~assertSame(1, actual)
+
+    ::method test_difference
+        expose py
+        set1 = py~set(py['a', 'b', 'c'])
+        set2 = py~set(py['c', 'd', 'e'])
+        difference = set1~difference(set2)
+
+        actual = py~len(difference)
+        self~assertSame(2, actual)
+
+    ::method test_symmetric_difference
+        expose py
+        set1 = py~set(py['a', 'b', 'c'])
+        set2 = py~set(py['c', 'd', 'e'])
+        symmetric_difference = set1~symmetric_difference(set2)
+
+        actual = py~len(symmetric_difference)
+        self~assertSame(4, actual)
+
+    ::method test_iter
+        expose py
+        set = py~set(py['a', 'b', 'c'])
+        iterator = py~iter(set)
+
+        concat = ''
+
+        do py~len(set)
+            concat ||= py~next(iterator)
+        end
+
+        expected = py['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
+        actual = expected~__contains__(concat)
+
+        self~assertTrue(actual)

@@ -1,0 +1,60 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.int.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    Examples: https://docs.python.org/3/library/functions.html#int
+*/
+::class int.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_noArguments
+        expose py
+        actual = py~int
+        self~assertSame(0, actual)
+
+    ::method test_float
+        expose py
+        float = py~float(123.45)
+        actual = py~int(float)
+        self~assertSame(123, actual)
+
+    ::method test_string
+        expose py
+        actual = py~int('123')
+        self~assertSame(123, actual)
+
+    ::method test_string_whitespacesAndUnderscore
+        expose py
+        string = py~escape('   -12_345\n')
+        actual = py~int(string)
+        self~assertSame(-12345, actual)
+
+    ::method test_string_base16
+        expose py
+        actual = py~int('FACE', py~int(16))
+        self~assertSame(64206, actual)
+
+    ::method test_string_prefix
+        expose py
+        actual = py~int('0xface', py~int(0))
+        self~assertSame(64206, actual)
+
+    ::method test_string_base2
+        expose py
+        actual = py~int('01110011', py~int(2))
+        self~assertSame(115, actual)

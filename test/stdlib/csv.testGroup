@@ -1,0 +1,50 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.csv.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See: https://docs.python.org/3/library/csv.html
+*/
+::class csv.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test
+        expose py
+
+        py~import('csv')
+
+        kwargs = py~kwargs
+        kwargs['newline'] = ''
+
+        -- Write CSV file.
+        csvfile = py~open('test-output/test_csv.csv', 'w', kwargs)
+
+        csvwriter = py~writer(csvfile)
+        csvwriter~writerow(py['a', 'b', 'c'])
+
+        csvfile~close
+
+        -- Read CSV file.
+        csvfile = py~open('test-output/test_csv.csv', kwargs)
+
+        csvreader = py~reader(csvfile)
+        iterator = py~iter(csvreader)
+        row = py~next(iterator)
+
+        csvfile~close
+
+        self~assertSame("['a', 'b', 'c']", row)

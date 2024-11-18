@@ -1,0 +1,77 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.arguments.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    These tests cover Python's unique feature of positional and keyword function arguments.
+
+    See:
+    https://docs.python.org/3/tutorial/controlflow.html#keyword-arguments
+    https://docs.python.org/3/tutorial/controlflow.html#special-parameters
+*/
+::class arguments.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_open_withKwargs
+        expose py
+
+        /*
+            Function parameters:
+
+            open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None)
+        */
+
+        -- Write to file.
+        kwargs = py~kwargs
+        kwargs['mode'] = 'w'
+        kwargs['encoding'] = 'utf-8'
+
+        f = py~open('test-output/test_arguments.txt', kwargs)
+        f~write('hello, world')
+        f~close
+
+        -- Read from file.
+        f = py~open('test-output/test_arguments.txt')
+        actual = f~read
+        f~close
+        self~assertSame('hello, world', actual)
+
+    ::method test_open_withDict
+        expose py
+
+        /*
+            Function parameters:
+
+            open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None)
+        */
+
+        -- Write to file.
+        dict = py~dict
+        dict['mode'] = 'w'
+        dict['encoding'] = 'utf-8'
+
+        kwargs = py~kwargs(dict)
+
+        f = py~open('test-output/test_arguments.txt', kwargs)
+        f~write('hello, world')
+        f~close
+
+        -- Read from file.
+        f = py~open('test-output/test_arguments.txt')
+        actual = f~read
+        f~close
+        self~assertSame('hello, world', actual)

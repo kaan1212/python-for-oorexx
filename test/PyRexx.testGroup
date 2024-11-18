@@ -1,0 +1,53 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.PyRexx.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
+*/
+::class PyRexx.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_escape_linefeed
+        expose py
+        actual = py~escape('hello, world\n')
+        self~assertSame('hello, world' || '0a'x, actual)
+
+    ::method test_escape_linefeed_complex
+        expose py
+        actual = py~escape('\hello, world\\n')
+        self~assertSame('\hello, world\' || '0a'x, actual)
+
+    ::method test_escape_linefeed_multiple
+        expose py
+        string = 'first line\n'
+        string ||= 'second line\n'
+        string ||= 'third line\n'
+
+        actual = py~escape(string)
+
+        nl = .String~nl -- '0a'x
+        result = 'first line'nl
+        result ||= 'second line'nl
+        result ||= 'third line'nl
+
+        self~assertSame(result, actual)
+
+    ::method test_escape_horizontalTab
+        expose py
+        actual = py~escape('column\tcolumn')
+        self~assertSame('column' || .String~tab || 'column', actual)

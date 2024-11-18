@@ -1,0 +1,97 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.indexing.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+
+/*
+    The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
+*/
+::class indexing.testGroup public subclass ooTestCase
+    ::method test_index
+        obj = .IndexArgumentMock~new
+
+        self~assertSame(1, obj['a'])
+        self~assertSame(2, obj['a', 'b'])
+        self~assertSame(3, obj['a', 'b', 'c'])
+
+    ::method test_index_omit_all
+        obj = .IndexArgumentMock~new
+
+        self~assertSame(0, obj[])
+        self~assertSame(0, obj[ , ])
+        self~assertSame(0, obj[ , , ])
+
+    ::method test_index_omit_leading
+        obj = .IndexArgumentMock~new
+
+        self~assertSame(2, obj[ , 'a'])
+        self~assertSame(3, obj[ , , 'a'])
+        self~assertSame(4, obj[ , , , 'a'])
+
+    ::method test_index_omit_trailing
+        obj = .IndexArgumentMock~new
+
+        self~assertSame(1, obj['a', ])
+        self~assertSame(1, obj['a', , ])
+        self~assertSame(1, obj['a', , , ])
+
+    ::method test_squareBrackets_get
+        obj = .IndexArgumentMock~new
+
+        obj['a', 'b', 'c'] = 1
+        self~assertSame(4, obj~count)
+
+    ::method test_roundBrackets_set
+        obj = .IndexArgumentMock~new
+
+        self~expectSyntax(43.1)
+        actual = obj('a', 'b')
+
+    ::method test_roundBrackets_get
+        obj = .IndexArgumentMock~new
+
+        self~expectSyntax(43.1)
+        obj('a', 'b') = 1
+
+    ::method test_curlyBrackets_set
+        obj = .IndexArgumentMock~new
+
+        -- Raises fatal [Framework exception]
+        -- actual = obj{'a', 'b'}
+
+    ::method test_curlyBrackets_get
+        obj = .IndexArgumentMock~new
+
+        -- Raises fatal [Framework exception]
+        -- obj{'a', 'b'} = 1
+
+::class IndexArgumentMock
+    ::attribute count
+
+    ::method '[]'
+        return arg()
+
+    ::method '[]='
+        self~count = arg()
+
+    ::method '()'
+        return arg()
+
+    ::method '()='
+        self~count = arg()
+
+    ::method '{}'
+        return arg()
+
+    ::method '{}='
+        self~count = arg()

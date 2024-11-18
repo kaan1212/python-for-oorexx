@@ -1,0 +1,54 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.float.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    Examples: https://docs.python.org/3/library/functions.html#float
+*/
+::class float.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_noArgument
+        expose py
+        actual = py~float
+        self~assertSame(0.0, actual)
+
+    ::method test_simple
+        expose py
+        actual = py~float('+1.23')
+        self~assertSame(1.23, actual)
+
+    ::method test_whitespaces
+        expose py
+        string = py~escape('   -12345\n')
+        actual = py~float(string)
+        self~assertSame(-12345.0, actual)
+
+    ::method test_exponent_lowercase
+        expose py
+        actual = py~float('1e-003')
+        self~assertSame(0.001, actual)
+
+    ::method test_exponent_uppercase
+        expose py
+        actual = py~float('+1E6')
+        self~assertSame(1000000.0, actual)
+
+    ::method test_infinity
+        expose py
+        actual = py~float('-Infinity')
+        self~assertSame('-inf', actual)

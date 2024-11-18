@@ -1,0 +1,430 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.builtins.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See: https://docs.python.org/3/library/functions.html
+
+    Coverage: 48 of 71 built-in functions
+*/
+::class builtins.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    -- Return the absolute value of a number.
+    ::method test_abs
+        expose py
+        x = py~int(-1)
+        actual = py~abs(x)
+        self~assertSame(1, actual)
+
+    -- Return True if all elements of the iterable are true (or if the iterable is empty).
+    ::method test_all
+        expose py
+        iterable = py[py~True, py~True, py~True]
+        actual = py~all(iterable)
+        self~assertTrue(actual)
+
+    -- Return True if any element of the iterable is true.
+    ::method test_any
+        expose py
+        iterable = py[py~True, py~False py~False]
+        actual = py~any(iterable)
+        self~assertTrue(actual)
+
+    -- Return a string containing a printable representation of an object, but escape the non-ASCII characters.
+    ::method test_ascii
+        expose py
+        actual = py~ascii('Euro sign: €')
+        self~assertSame("'Euro sign: \u20ac'", actual)
+
+    -- Convert an integer number to a binary string prefixed with “0b”.
+    ::method test_bin
+        expose py
+        x = py~int(3)
+        actual = py~bin(x)
+        self~assertSame('0b11', actual)
+
+    -- Return a Boolean value, i.e. one of True or False.
+    ::method test_bool
+        expose py
+        object = py~int(0)
+        actual = py~bool(object)
+        self~assertFalse(actual)
+
+    -- This function drops you into the debugger at the call site.
+    ::method test_breakpoint
+        expose py
+        -- Smoke test
+        self~assertTrue(.true)
+
+    -- Return a new array of bytes.
+    ::method test_bytearray
+        expose py
+        -- Smoke test
+        actual = py~bytearray
+        self~assertSame(0, py~len(actual))
+
+    -- Return a new “bytes” object which is an immutable sequence of integers in the range 0 <= x < 256.
+    ::method test_bytes
+        expose py
+        -- Smoke test
+        actual = py~bytes
+        self~assertSame(0, py~len(actual))
+
+    -- Return the string representing a character whose Unicode code point is the integer i.
+    ::method test_chr
+        expose py
+        i = py~int(97)
+        actual = py~chr(i)
+        self~assertSame('a', actual)
+
+    -- Compile the source into a code or AST object.
+    ::method test_compile
+        expose py
+        code = py~compile('1+2', '<string>', 'eval')
+        actual = py~eval(code)
+        self~assertSame(3, actual)
+
+    -- Convert a single string or number to a complex number, or create a complex number from real and imaginary parts.
+    ::method test_complex
+        expose py
+        actual = py~complex('+1.23')
+        self~assertSame('(1.23+0j)', actual)
+
+    -- Create a new dictionary.
+    ::method test_dict
+        expose py
+        dict = py~dict
+        dict['one'] = py~int(1)
+        dict['two'] = py~int(2)
+        dict['three'] = py~int(3)
+
+        actual = dict['two']
+
+        self~assertSame(2, actual)
+
+    -- Take two (non-complex) numbers as arguments and return a pair of numbers consisting of their quotient and remainder when using integer division.
+    ::method test_divmod
+        expose py
+        a = py~int(5)
+        b = py~int(2)
+
+        actual = py~divmod(a, b)
+
+        self~assertSame('(2, 1)', actual)
+
+    -- Return an enumerate object. iterable must be a sequence, an iterator, or some other object which supports iteration.
+    ::method test_enumerate
+        expose py
+        seasons = py['Spring', 'Summer', 'Fall', 'Winter']
+        actual = py~list(py~enumerate(seasons))
+        self~assertSame("[(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]", actual)
+
+    -- The expression argument is parsed and evaluated as a Python expression.
+    ::method test_eval
+        expose py
+        actual = py~eval('1+1')
+        self~assertSame(2, actual)
+
+    -- Return a floating-point number constructed from a number or a string.
+    ::method test_float
+        expose py
+        actual = py~float(1.23)
+        self~assertSame(1.23, actual)
+
+    -- Convert a value to a “formatted” representation, as controlled by format_spec.
+    ::method test_format
+        expose py
+        value = py~int(255)
+        actual = py~format(value, '#x')
+        self~assertSame('0xff', actual)
+
+    -- Return a new frozenset object.
+    ::method test_frozenset
+        expose py
+        set = py~set
+        set~add('a')
+        set~add('b')
+        set~add('c')
+
+        frozen = py~frozenset(set)
+        actual = py~len(frozen)
+
+        self~assertSame(3, actual)
+
+    -- Return the value of the named attribute of object.
+    ::method test_getattr
+        expose py
+        actual = py~getattr(py~str, 'swapcase')
+        self~assertTrue(actual~makeString~startsWith('<built-in method swapcase of str object at 0x'))
+
+    -- The result is True if the string is the name of one of the object’s attributes, False if not.
+    ::method test_hasattr
+        expose py
+        object = py~frozenset
+        actual = py~hasattr(object, 'add')
+        self~assertFalse(actual)
+
+    -- Return the hash value of the object (if it has one).
+    ::method test_hash
+        expose py
+        actual = py~hash('Rexx')
+        self~assertSame('NUM', datatype(actual))
+
+    -- Invoke the built-in help system. (This function is intended for interactive use.)
+    ::method test_help
+        expose py
+        -- Smoke test
+        self~assertTrue(.true)
+
+    -- Convert an integer number to a lowercase hexadecimal string prefixed with “0x”.
+    ::method test_hex
+        expose py
+        x = py~int(255)
+        actual = py~hex(x)
+        self~assertSame('0xff', actual)
+
+    -- Return the “identity” of an object.
+    -- his is an integer which is guaranteed to be unique and constant for this object during its lifetime.
+    ::method test_id
+        expose py
+        actual = py~id('Rexx')
+        self~assertSame('NUM', datatype(actual))
+
+    -- Return an integer object constructed from a number or a string, or return 0 if no arguments are given.
+    ::method test_int
+        expose py
+        actual = py~int(123)
+        self~assertSame(123, actual)
+
+    -- Return an iterator object.
+    ::method test_iter
+        expose py
+        stop = py~int(10)
+        object = py~range(stop)
+        iterator = py~iter(object)
+
+        py~next(iterator)
+        py~next(iterator)
+        py~next(iterator)
+        actual = py~next(iterator)
+
+        self~assertSame(3, actual)
+
+    -- Return the length (the number of items) of an object.
+    ::method test_len
+        expose py
+        actual = py~len('Rexx')
+        self~assertSame(4, actual)
+
+    -- Create a new list.
+    ::method test_list
+        expose py
+        list = py~list
+        list~append('C')
+        list~append('Python')
+        list~append('Rexx')
+
+        index = py~int(1)
+        actual = list[index]
+
+        self~assertSame('Python', actual)
+
+    -- Return the largest item in an iterable or the largest of two or more arguments.
+    ::method test_max
+        expose py
+        actual = py~max('cdab')
+        self~assertSame('d', actual)
+
+    -- Return the smallest item in an iterable or the smallest of two or more arguments.
+    ::method test_min
+        expose py
+        actual = py~min('cdab')
+        self~assertSame('a', actual)
+
+    -- Retrieve the next item from the iterator.
+    ::method test_next
+        expose py
+        stop = py~int(10)
+        object = py~range(stop)
+        iterator = py~iter(object)
+
+        py~next(iterator)
+        py~next(iterator)
+        py~next(iterator)
+        actual = py~next(iterator)
+
+        self~assertSame(3, actual)
+
+    -- This is the ultimate base class of all other classes.
+    ::method test_object
+        expose py
+        actual = py~object
+        self~assertTrue(actual~makestring~startsWith('<object object at 0x'))
+
+    -- Convert an integer number to an octal string prefixed with “0o”.
+    ::method test_oct
+        expose py
+        x = py~int(8)
+        actual = py~oct(x)
+        self~assertSame('0o10', actual)
+
+    -- Open file and return a corresponding file object.
+    ::method test_open
+        expose py
+
+        -- Write to file.
+        f = py~open('test-output/test_open.txt', 'w')
+        f~write('hello, world')
+        f~close
+
+        -- Read from file.
+        f = py~open('test-output/test_open.txt')
+        actual = f~read
+        f~close
+        self~assertSame('hello, world', actual)
+
+    -- Given a string representing one Unicode character, return an integer representing the Unicode code point of that character.
+    ::method test_ord
+        expose py
+        actual = py~ord('a')
+        self~assertSame(97, actual)
+
+    -- Return base to the power exp.
+    ::method test_pow
+        expose py
+        base = py~int(2)
+        exp = py~int(3)
+        actual = py~pow(base, exp)
+        self~assertSame(8, actual)
+
+    -- Print objects.
+    ::method test_print
+        expose py
+
+        /*
+            Python function parameters:
+
+            print(*objects, sep=' ', end='\n', file=None, flush=False)
+        */
+
+        -- Print to file instead of stdout.
+        f = py~open('test-output/test_print.txt', 'w')
+        kwargs = py~kwargs
+        kwargs['end'] = ''
+        kwargs['file'] = f
+
+        py~print('hello, world', kwargs)
+
+        f~close
+
+        -- Read from file.
+        f = py~open('test-output/test_print.txt')
+        actual = f~read
+        f~close
+        self~assertSame('hello, world', actual)
+
+    -- Create a new range object.
+    ::method test_range
+        expose py
+        stop = py~int(10)
+        actual = py~range(stop)
+        self~assertSame('[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]', py~list(actual))
+
+    -- Return a string containing a printable representation of an object.
+    ::method test_repr
+        expose py
+        actual = py~repr('Hello, Python!')
+        self~assertSame("'Hello, Python!'", actual)
+
+    -- Return a reverse iterator.
+    ::method test_reversed
+        expose py
+        seq = py['a', 'b', 'c']
+
+        iterator = py~reversed(seq)
+        actual = py~list(iterator)
+
+        self~assertSame("['c', 'b', 'a']", actual)
+
+    -- Return number rounded to ndigits precision after the decimal point.
+    ::method test_round
+        expose py
+        -- See: https://docs.python.org/3/tutorial/floatingpoint.html#tut-fp-issues
+        number = py~float(0.5)
+        actual = py~round(number)
+        self~assertSame(0, actual)
+
+    -- Return a new set object.
+    ::method test_set
+        expose py
+        set = py~set
+        set~add('a')
+        set~add('b')
+        set~add('b')
+        set~add('c')
+        set~add('c')
+        set~add('c')
+
+        actual = py~len(set)
+
+        self~assertSame(3, actual)
+
+    -- Return a slice object.
+    ::method test_slice
+        expose py
+        string = py~str('Hello, Python!')
+        start = py~int(7)
+        stop = py~int(13)
+        slice = py~slice(start, stop)
+
+        actual = string[slice]
+
+        self~assertSame('Python', actual)
+
+    -- Return a new sorted list from the items in iterable.
+    ::method test_sorted
+        expose py
+        actual = py~sorted('cdab')
+        self~assertSame("['a', 'b', 'c', 'd']", actual)
+
+    -- Return a str version of object.
+    ::method test_str
+        expose py
+        actual = py~str('Hello, Python!')
+        self~assertSame('Hello, Python!', actual)
+
+    -- Create a new tuple.
+    ::method test_tuple
+        expose py
+        stop = py~int(3)
+        iterable = py~range(stop)
+
+        actual = py~tuple(iterable)
+
+        self~assertSame('(0, 1, 2)', actual)
+
+    -- Iterate over several iterables in parallel, producing tuples with an item from each one.
+    ::method test_zip
+        expose py
+        iterable1 = py[py~int(1), py~int(2), py~int(3)]
+        iterable2 = py['sugar', 'spice', 'everything nice']
+
+        iterator = py~zip(iterable1, iterable2)
+        actual = py~list(iterator)
+
+        self~assertSame("[(1, 'sugar'), (2, 'spice'), (3, 'everything nice')]", actual)

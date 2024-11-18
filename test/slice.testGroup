@@ -1,0 +1,90 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.slice.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    See: https://docs.python.org/3/library/functions.html#slice
+
+    Python syntax examples:
+        sequence[start:stop:step]
+
+        sequence[start:]
+        sequence[start:stop]
+        sequence[start::step]
+
+        sequence[:stop]
+        sequence[:stop:step]
+
+        sequence[::step]
+*/
+::class slice.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_string
+        expose py
+        string = py~str('hello, world')
+        start = py~int(0)
+        stop = py~int(5)
+
+        actual = string[start, stop]
+
+        self~assertSame('hello', actual)
+
+    ::method test_list
+        expose py
+        list = py['h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd']
+        start = py~int(0)
+        stop = py~int(5)
+
+        actual = list[start, stop]
+
+        self~assertSame("['h', 'e', 'l', 'l', 'o']", actual)
+
+    ::method test_omitStartIndex
+        expose py
+        string = py~str('hello, world')
+        stop = py~int(5)
+
+        actual = string[, stop]
+
+        self~assertSame('hello', actual)
+
+    ::method test_omitStopIndex
+        expose py
+        string = py~str('hello, world')
+        start = py~int(7)
+
+        actual = string[start, py~None]
+
+        self~assertSame('world', actual)
+
+    ::method test_omitStartAndStopIndices
+        expose py
+        string = py~str('hello, world')
+
+        actual = string[, py~None]
+
+        self~assertSame('hello, world', actual)
+
+    ::method test_step
+        expose py
+        string = py~str('hello, world')
+        step = py~int(2)
+
+        actual = string[, , step]
+
+        self~assertSame('hlo ol', actual)

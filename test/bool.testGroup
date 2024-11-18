@@ -1,0 +1,107 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.bool.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    https://docs.python.org/3/library/stdtypes.html#boolean-type-bool
+
+    "The bool type has exactly two constant instances: True and False."
+
+    https://docs.python.org/3/library/stdtypes.html#truth-value-testing
+
+    "Here are most of the built-in objects considered false:
+    - constants defined to be false: None and False
+    - zero of any numeric type: 0, 0.0, 0j, Decimal(0), Fraction(0, 1)
+    - empty sequences and collections: '', (), [], {}, set(), range(0)"
+*/
+::class bool.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_hasExactlyOneConstantTrueInstance
+        expose py
+        bool1 = py~True
+        bool2 = py~bool(py~int(1))
+
+        identity1 = py~id(bool1)
+        identity2 = py~id(bool2)
+
+        self~assertEquals(identity1~makestring, identity2)
+        self~assertSame(identity1~makestring, identity2)
+
+    ::method test_hasExactlyOneConstantFalseInstance
+        expose py
+        bool1 = py~False
+        bool2 = py~bool(py~int(0))
+
+        identity1 = py~id(bool1)
+        identity2 = py~id(bool2)
+
+        self~assertEquals(identity1~makestring, identity2)
+        self~assertSame(identity1~makestring, identity2)
+
+    ::method test_rexxPythonTrueCompatibility
+        expose py
+        self~assertTrue(py~True)
+
+        self~assertTrue(.true = py~True)
+        self~assertTrue(.true == py~True)
+
+        self~assertFalse(.false = py~True)
+        self~assertFalse(.false == py~True)
+
+        self~assertTrue(py~True = .true)
+
+    ::method test_rexxPythonFalseCompatibility
+        expose py
+        self~assertFalse(py~False)
+
+        self~assertFalse(.true = py~False)
+        self~assertFalse(.true == py~False)
+
+        self~assertTrue(.false = py~False)
+        self~assertTrue(.false == py~False)
+
+    ::method test_objectsConsideredTrue
+        expose py
+        self~assertTrue(py~bool(py~True))
+        self~assertTrue(py~bool(py~int(1)))
+        self~assertTrue(py~bool(py~float(1.0)))
+        self~assertTrue(py~bool(py~complex('1j')))
+        -- todo: Decimal(0)
+        -- todo: Fraction(0, 1)
+        self~assertTrue(py~bool('a'))
+        self~assertTrue(py~bool(py~tuple(py~range(py~int(1)))))
+        self~assertTrue(py~bool(py~list~~append('a')))
+        self~assertTrue(py~bool(py~dict~~__setitem__('key', 'value')))
+        self~assertTrue(py~bool(py~set~~add('a')))
+        self~assertTrue(py~bool(py~range(py~int(1))))
+
+    ::method test_objectsConsideredFalse
+        expose py
+        -- todo: None
+        self~assertFalse(py~bool(py~False))
+        self~assertFalse(py~bool(py~int(0)))
+        self~assertFalse(py~bool(py~float(0.0)))
+        self~assertFalse(py~bool(py~complex('0j')))
+        -- todo: Decimal(0)
+        -- todo: Fraction(0, 1)
+        self~assertFalse(py~bool(''))
+        self~assertFalse(py~bool(py~tuple))
+        self~assertFalse(py~bool(py~list))
+        self~assertFalse(py~bool(py~dict))
+        self~assertFalse(py~bool(py~set))
+        self~assertFalse(py~bool(py~range(py~int(0))))
