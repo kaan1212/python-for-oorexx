@@ -22,29 +22,65 @@ return testResult
         expose py
         py = .PyRexx~new
 
-    ::method test
+    ::method test_writer_reader
+        /*
+            Python example:
+            import csv
+
+            file = 'some.csv'
+
+            with open(file, 'w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['a', 'b', 'c'])
+
+            with open(file, newline='') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    print(row)
+
+            Output:
+            ['a', 'b', 'c']
+        */
+
         expose py
 
         py~import('csv')
 
+        file = 'test-output/test_csv.csv'
+
         kwargs = py~kwargs
         kwargs['newline'] = ''
 
-        -- Write CSV file.
-        csvfile = py~open('test-output/test_csv.csv', 'w', kwargs)
+        -- Write.
+        f = py~open(file, 'w', kwargs)
+        writer = py~writer(f)
+        writer~writerow(py['a', 'b', 'c'])
+        f~close
 
-        csvwriter = py~writer(csvfile)
-        csvwriter~writerow(py['a', 'b', 'c'])
-
-        csvfile~close
-
-        -- Read CSV file.
-        csvfile = py~open('test-output/test_csv.csv', kwargs)
-
-        csvreader = py~reader(csvfile)
-        iterator = py~iter(csvreader)
-        row = py~next(iterator)
-
-        csvfile~close
+        -- Read.
+        f = py~open(file, kwargs)
+        reader = py~reader(f)
+        row = py~next(reader)
+        f~close
 
         self~assertSame("['a', 'b', 'c']", row)
+
+    ::method test_reader_str
+        /*
+            Python example:
+            import csv
+            for row in csv.reader(['one,two,three'])
+                print(row)
+
+            Output:
+            ['one', 'two', 'three']
+        */
+
+        expose py
+
+        py~import('csv')
+
+        csvreader = py~reader(py['one,two,three'])
+        row = py~next(csvreader)
+
+        self~assertSame("['one', 'two', 'three']", row)
