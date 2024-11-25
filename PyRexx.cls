@@ -17,11 +17,13 @@
         use arg pythonType, pythonValue, rexxValue
 
     ::method '='
+        expose rexxValue
         use arg b
-        return b = self~rexxValue
+        return b = rexxValue
 
     ::method makeString
-        return self~rexxValue
+        expose rexxValue
+        return rexxValue
 
 ::class PyRexx public
     ::constant False (.PythonConstant~False)
