@@ -145,19 +145,7 @@
         end
 
         -- Sequence slicing.
-        start = .nil
-        stop = .nil
-        step = .nil
-
-        if arg(1, 'exists') then
-            start = arg(1)
-
-        if arg(2, 'exists') then
-            stop = arg(2)
-
-        if arg(3, 'exists') then
-            step = arg(3)
-
+        use arg start=.nil, stop=.nil, step=.nil
         return self~_slice(start, stop, step)
 
 ::routine buildRequest
