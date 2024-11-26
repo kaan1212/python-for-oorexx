@@ -86,7 +86,9 @@ return testResult
         self~assertTrue(py~bool('a'))
         self~assertTrue(py~bool(py~tuple(py~range(py~int(1)))))
         self~assertTrue(py~bool(py~list~~append('a')))
-        self~assertTrue(py~bool(py~dict~~__setitem__('key', 'value')))
+        dict = py~dict
+        dict['key'] = 'value'
+        self~assertTrue(py~bool(dict))
         self~assertTrue(py~bool(py~set~~add('a')))
         self~assertTrue(py~bool(py~range(py~int(1))))
 

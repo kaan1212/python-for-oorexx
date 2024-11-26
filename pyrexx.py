@@ -23,9 +23,6 @@ def invoke_function(request):
     if function_name == 'NoneType':
         return_value = None
     else:
-        # Apply function invocation rewrites.
-        function_name, arguments = apply_rewrites(function_name, arguments)
-
         # Resolve function.
         function = resolve_function(object_identity, function_name)
 
@@ -61,16 +58,6 @@ def parse_request(request):
                 case 'ref': arguments.append(objects[int(arg_value)])
 
     return object_identity, function_name, arguments
-
-
-# Private.
-def apply_rewrites(function_name, arguments):
-    if function_name == '_slice':
-        function_name = '__getitem__'
-        s = slice(arguments[0], arguments[1], arguments[2])
-        arguments = [s]
-
-    return function_name, arguments
 
 
 # Private.

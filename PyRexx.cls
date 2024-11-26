@@ -33,6 +33,9 @@
     ::method init
         call InitPython
 
+        -- Import Python standard operators ([key], [start:stop:step], del, in) as functions.
+        self~import('operator')
+
     ::method import
         use arg name
         call ImportPythonModule name
@@ -89,24 +92,25 @@
             ~changeStr('\t', .String~tab)
 
 ::class PythonInstance
+    ::attribute context get private
     ::attribute identity get
 
     ::method init
-        expose identity
-        use arg identity
+        expose context identity
+        use arg context, identity
 
     ::method unknown
         use arg name, arguments
         return self~callMethod(name, arguments)
 
     ::method callMethod
-        expose identity
+        expose context identity
         use arg name, arguments
 
         request = buildRequest(identity, name, arguments)
         response = CallPythonFunction(request)
 
-        return getReturnValue(py, response)
+        return getReturnValue(context, response)
 
     ::method makeString
         -- Call the Python object's special __str__() method
@@ -132,21 +136,26 @@
         return a = b
 
     ::method '[]='
-        expose identity
+        expose context
         use arg value, key
 
-        return self~__setitem__(key, value)
+        -- Indexing.
+        return context~setitem(self, key, value)
 
     ::method '[]'
-        -- Sequence indexing.
+        expose context
+
+        -- Indexing.
         if arg() == 1 then do
             key = arg(1)
-            return self~__getitem__(key)
+            return context~getitem(self, key)
         end
 
-        -- Sequence slicing.
+        -- Slicing.
+        -- See: https://docs.python.org/3/reference/datamodel.html#object.__length_hint__
         use arg start=.nil, stop=.nil, step=.nil
-        return self~_slice(start, stop, step)
+        slice = context~slice(start, stop, step)
+        return self[slice]
 
 ::routine buildRequest
     -- Example: buildRequest('', 'print', 'hello, world') returns ';print;str;hello, world'
@@ -182,11 +191,11 @@
     return request
 
 ::routine getReturnValue
-    use arg py, response
+    use arg context, response
 
     hasReturnValue = response \= 'NoneType;None'
 
     if hasReturnValue then
-        return .PythonInstance~new(response)
+        return .PythonInstance~new(context, response)
     else
         return .nil
