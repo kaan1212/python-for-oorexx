@@ -1,83 +1,100 @@
 from types import ModuleType
 import builtins
+import importlib
 
 
 objects = {}
 
 
 # Public.
+def get_builtin_constant(name):
+    match name:
+        case 'False': return False
+        case 'True': return True
+        case _: return None
+
+
+# Public.
+def invoke_str(identity):
+    identity = int(identity)
+    object = objects[identity]
+    return str(object)
+
+
+# Public.
 def invoke_import(module_name):
-    globals()[module_name] = __import__(module_name)
+    globals()[module_name] = importlib.import_module(module_name)
     return f'Imported {module_name}.'
 
 
 # Public.
-def invoke_function(request):
-    '''
-    Invokes dynamically functions and methods.
-    '''
+def invoke_function(name, arguments):
+    name = name.lower()
+    arguments = load_arguments(arguments)
 
-    # Parse request.
-    object_identity, function_name, arguments = parse_request(request)
-
-    if function_name == 'NoneType':
-        return_value = None
+    if name == 'NoneType':
+        object = None
     else:
-        # Resolve function.
-        function = resolve_function(object_identity, function_name)
+        function = resolve_function(name)
+        object = invoke_function_with_arguments(function, arguments)
 
-        # Invoke function with arguments.
-        return_value = invoke_function_with_arguments(function, arguments)
+    identity = id(object)
+    objects[identity] = object
 
-    # Return None or object identity.
-    return process_response(return_value, plain=function_name == '__str__')
+    return str(identity)
+
+
+# Public.
+def invoke_method(identity, name, arguments):
+    identity = int(identity)
+    name = name.lower()
+    arguments = load_arguments(arguments)
+    object = objects[identity]
+    function = getattr(object, name)
+
+    object = invoke_function_with_arguments(function, arguments)
+    identity = id(object)
+    objects[identity] = object
+
+    return str(identity)
 
 
 # Private.
-def parse_request(request):
-    object_identity = None
-    function_name = None
+def load_arguments(string):
+    if string == '':
+        return []
+
     arguments = []
 
-    if request == ';NoneType':
-        function_name = 'NoneType'
-    else:
-        token = request.split(';')
-        object_identity = token[0]
-        function_name = token[1].lower()
+    token = string.split(';')
 
-        for i in range(2, len(token), 2):
-            arg_type = token[i]
-            arg_value = token[i+1]
+    for i in range(0, len(token), 2):
+        type = token[i]
+        value = token[i+1]
 
-            match arg_type:
-                case 'NoneType': arguments.append(None)
-                case 'bool' if arg_value == 'True': arguments.append(True)
-                case 'bool' if arg_value == 'False': arguments.append(False)
-                case 'str': arguments.append(arg_value)
-                case 'ref': arguments.append(objects[int(arg_value)])
+        if type == 'str':
+            arguments.append(value)
+        elif type == 'id':
+            identity = int(value)
+            object = objects[identity]
+            arguments.append(object)
 
-    return object_identity, function_name, arguments
+    return arguments
 
 
 # Private.
-def resolve_function(object_identity, function_name):
-    if object_identity:
-        # Resolve a method on an existing object.
-        object = objects[int(object_identity)]
-
-        function = getattr(object, function_name)
-    elif function_name in globals():
+def resolve_function(name):
+    if name in globals():
         # Resolve a user-defined function.
-        function = globals()[function_name]
-    elif hasattr(builtins, function_name):
+        function = globals()[name]
+    elif hasattr(builtins, name):
         # Resolve a built-in function.
-        function = getattr(builtins, function_name)
+        function = getattr(builtins, name)
     else:
         # Resolve a module function.
-        for value in globals().values():
-            if isinstance(value, ModuleType) and hasattr(value, function_name):
-                function = getattr(value, function_name)
+        for object in globals().values():
+            if isinstance(object, ModuleType) and hasattr(object, name):
+                function = getattr(object, name)
                 break
 
     return function
@@ -104,14 +121,3 @@ def contains_kwargs(args):
         return isinstance(last_arg, dict) and 'kwargs' in last_arg
     else:
         return False
-
-
-# Private.
-def process_response(object, plain=False):
-    if plain:
-        return object
-    elif object == None:
-        return 'NoneType;None'
-    else:
-        objects[id(object)] = object
-        return str(id(object))

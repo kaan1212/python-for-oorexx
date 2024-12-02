@@ -56,3 +56,18 @@ return testResult
         actual = string[index]
 
         self~assertSame('h', actual)
+
+    ::method test_trueString_isNotRexxTrue
+        expose py
+        actual = py~str('True')
+        self~assertNotSame(.true, actual)
+
+    ::method test_falseString_isNotRexxFalse
+        expose py
+        actual = py~str('False')
+        self~assertNotSame(.false, actual)
+
+    ::method test_noneString_isNotRexxNil
+        expose py
+        actual = py~str('None')
+        self~assertNotNil(actual)

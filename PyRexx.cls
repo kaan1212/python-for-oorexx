@@ -1,69 +1,94 @@
 -- PyRexx.dll
 ::requires 'PyRexx' library
 
-::class PythonConstant
-    -- Singleton.
-
-    ::constant False (.PythonConstant~new('bool', 'False', .false))
-    ::constant True (.PythonConstant~new('bool', 'True', .true))
-    ::constant None (.PythonConstant~new('NoneType', 'None', .nil))
-
-    ::attribute pythonType get
-    ::attribute pythonValue get
-    ::attribute rexxValue get private
-
-    ::method init private
-        expose pythonType pythonValue rexxValue
-        use arg pythonType, pythonValue, rexxValue
-
-    ::method '='
-        expose rexxValue
-        use arg b
-        return b = rexxValue
-
-    ::method makeString
-        expose rexxValue
-        return rexxValue
 
 ::class PyRexx public
-    ::constant False (.PythonConstant~False)
-    ::constant True (.PythonConstant~True)
-    ::constant None (.PythonConstant~None)
+    ::attribute False get
+    ::attribute True get
+    ::attribute None get
+
+    ::attribute objects get private
 
     ::method init
-        call InitPython
+        expose False True None objects
+
+        call PyRexx_Initialize
+        objects = .Directory~new
+        False = self~callFunction('get_builtin_constant', 'False')
+        True = self~callFunction('get_builtin_constant', 'True')
+        None = self~callFunction('get_builtin_constant', 'None')
 
         -- Import Python standard operators ([key], [start:stop:step], del, in) as functions.
         self~import('operator')
 
     ::method import
         use arg name
-        call ImportPythonModule name
+        call PyRexx_Import name
 
     ::method unknown
-        use arg name, arguments
-        return self~callFunction(name, arguments)
+        use arg name, args
+        return self~callFunction(name, args)
 
     ::method callFunction
-        use arg name, arguments
+        use arg name, args
 
-        if arg() == 1 then
-            arguments = .Array~new
+        if \ args~isA(.Array) then
+            args = arg(2, 'Array')
 
-        request = buildRequest('', name, arguments)
-        response = CallPythonFunction(request)
+        args = self~serializeArgs(args)
+        identity = PyRexx_CallFunction(name, args)
 
-        return getReturnValue(self, response)
+        return self~getPythonInstance(identity)
+
+    ::method callMethod
+        use arg identity, name, args
+
+        if \ args~isA(.Array) then
+            args = arg(3, 'Array')
+
+        args = self~serializeArgs(args)
+        identity = PyRexx_CallMethod(identity, name, args)
+
+        return self~getPythonInstance(identity)
+
+    ::method makeString
+        expose False True None
+        use arg identity
+
+        select case identity
+            when False~identity then return .false
+            when True~identity then return .true
+            when None~identity then return .nil
+            otherwise return PyRexx_GetStringVersion(identity)
+        end
+
+    ::method serializeArgs private
+        expose None
+        use arg args
+
+        array = .Array~new(2 * args~items)
+
+        do arg over args
+            select case arg~class
+                when .nil~class then array~append('id;'None~identity)
+                when .String then array~append('str;'arg)
+                when .PythonInstance then array~append('id;'arg~identity)
+            end
+        end
+
+        return array~toString('Line', ';')
+
+    ::method getPythonInstance private
+        expose objects
+        use arg identity
+
+        if \ objects~hasIndex(identity) then
+            objects[identity] = .PythonInstance~new(self, identity)
+
+        return objects[identity]
 
     ::method kwargs
-        -- If a dictionary was passed, just return it.
-        -- Otherwise return a new dictionary.
-        dict = .nil
-
-        if arg() == 1 then
-            dict = arg(1)
-        else
-            dict = self~dict
+        use arg dict=(self~callFunction('dict'))
 
         -- Mark this dictionary for storing keyword arguments.
         dict['kwargs'] = 'kwargs'
@@ -71,12 +96,7 @@
         return dict
 
     ::method '[]'
-        -- Return an empty list.
-        if arg() == 0 then
-            return self~list
-
-        -- Return a non-empty list.
-        list = self~list
+        list = self~callFunction('list')
 
         do i=1 to arg()
             list~append(arg(i))
@@ -91,111 +111,53 @@
             ~changeStr('\n', .String~nl),
             ~changeStr('\t', .String~tab)
 
+
 ::class PythonInstance
-    ::attribute context get private
+    ::attribute runtime get private
     ::attribute identity get
 
     ::method init
-        expose context identity
-        use arg context, identity
+        expose runtime identity
+        use arg runtime, identity
 
     ::method unknown
-        use arg name, arguments
-        return self~callMethod(name, arguments)
-
-    ::method callMethod
-        expose context identity
-        use arg name, arguments
-
-        request = buildRequest(identity, name, arguments)
-        response = CallPythonFunction(request)
-
-        return getReturnValue(context, response)
+        expose runtime identity
+        use arg name, args
+        return runtime~callMethod(identity, name, args)
 
     ::method makeString
-        -- Call the Python object's special __str__() method
-        -- to retrieve a nicely printable string representation.
-        expose identity
-
-        request = buildRequest(identity, '__str__', '')
-        response = CallPythonFunction(request)
-
-        if response = 'True' then
-            return .true
-        else if response = 'False' then
-            return .false
-        else if response = 'None' then
-            return .nil
-        else
-            return response
+        expose runtime identity
+        return runtime~makeString(identity)
 
     ::method '='
         use arg b
         a = self~makeString
-
         return a = b
 
     ::method '[]='
-        expose context
+        expose runtime
         use arg value, key
 
         -- Indexing.
-        return context~setitem(self, key, value)
+        return runtime~callFunction('setitem', self, key, value)
 
     ::method '[]'
-        expose context
+        expose runtime
 
         -- Indexing.
-        if arg() == 1 then do
-            key = arg(1)
-            return context~getitem(self, key)
-        end
+        if arg() == 1 then
+            return runtime~callFunction('getitem', self, arg(1))
 
-        -- Slicing.
-        -- See: https://docs.python.org/3/reference/datamodel.html#object.__length_hint__
+        /*
+            Slicing.
+
+            Python implementation detail:
+            "a[1:2] = b
+            is translated to
+            a[slice(1, 2, None)] = b
+            Missing slice items are always filled with None."
+            See: https://docs.python.org/3/reference/datamodel.html#object.__length_hint__
+        */
         use arg start=.nil, stop=.nil, step=.nil
-        slice = context~slice(start, stop, step)
+        slice = runtime~callFunction('slice', start, stop, step)
         return self[slice]
-
-::routine buildRequest
-    -- Example: buildRequest('', 'print', 'hello, world') returns ';print;str;hello, world'
-
-    use arg objectIdentity, callableName, callableArgs
-
-    request = objectIdentity';'callableName
-
-    do arg over callableArgs
-        type = .nil
-        value = .nil
-
-        if arg == .nil then do
-            type = .PythonConstant~None~pythonType
-            value = .PythonConstant~None~pythonValue
-        end
-        else if arg~isA(.String) then do
-            type = 'str'
-            value = arg
-        end
-        else if arg~isA(.PythonConstant) then do
-            type = arg~pythonType
-            value = arg~pythonValue
-        end
-        else if arg~isA(.PythonInstance) then do
-            type = 'ref'
-            value = arg~identity
-        end
-
-        request = request';'type';'value
-    end
-
-    return request
-
-::routine getReturnValue
-    use arg context, response
-
-    hasReturnValue = response \= 'NoneType;None'
-
-    if hasReturnValue then
-        return .PythonInstance~new(context, response)
-    else
-        return .nil
