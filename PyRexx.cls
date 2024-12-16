@@ -11,19 +11,26 @@
 
     ::method init
         expose False True None objects
-
-        call PyRexx_Initialize
         objects = .Directory~new
+
+        debug = .false
+        call PyRexx_Initialize 'pyrexx', debug
+
+        False = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'False'))
+        True = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'True'))
+        None = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'None'))
+        /* Alternative:
         False = self~callFunction('get_builtin_constant', 'False')
         True = self~callFunction('get_builtin_constant', 'True')
         None = self~callFunction('get_builtin_constant', 'None')
+        */
 
         -- Import Python standard operators ([key], [start:stop:step], del, in) as functions.
         self~import('operator')
 
     ::method import
         use arg name
-        call PyRexx_Import name
+        call PyRexx_CallFunction 'invoke_import', name
 
     ::method unknown
         use arg name, args
@@ -35,8 +42,7 @@
         if \ args~isA(.Array) then
             args = arg(2, 'Array')
 
-        args = self~serializeArgs(args)
-        identity = PyRexx_CallFunction(name, args)
+        identity = PyRexx_CallFunction('invoke_function', .Array~of(name, args))
 
         return self~getPythonInstance(identity)
 
@@ -46,37 +52,20 @@
         if \ args~isA(.Array) then
             args = arg(3, 'Array')
 
-        args = self~serializeArgs(args)
-        identity = PyRexx_CallMethod(identity, name, args)
+        identity = PyRexx_CallFunction('invoke_method', .Array~of(identity, name, args))
 
         return self~getPythonInstance(identity)
 
     ::method makeString
         expose False True None
-        use arg identity
+        use arg pythonInstance
 
-        select case identity
+        select case pythonInstance~identity
             when False~identity then return .false
             when True~identity then return .true
             when None~identity then return .nil
-            otherwise return PyRexx_GetStringVersion(identity)
+            otherwise return PyRexx_CallFunction('invoke_str', pythonInstance~identity)
         end
-
-    ::method serializeArgs private
-        expose None
-        use arg args
-
-        array = .Array~new(2 * args~items)
-
-        do arg over args
-            select case arg~class
-                when .nil~class then array~append('id;'None~identity)
-                when .String then array~append('str;'arg)
-                when .PythonInstance then array~append('id;'arg~identity)
-            end
-        end
-
-        return array~toString('Line', ';')
 
     ::method getPythonInstance private
         expose objects
@@ -126,8 +115,8 @@
         return runtime~callMethod(identity, name, args)
 
     ::method makeString
-        expose runtime identity
-        return runtime~makeString(identity)
+        expose runtime
+        return runtime~makeString(self)
 
     ::method '='
         use arg b

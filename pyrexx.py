@@ -7,11 +7,23 @@ objects = {}
 
 
 # Public.
+def get_builtin_constant_identity(name):
+    constant = get_builtin_constant(name)
+    identity = id(constant)
+
+    return str(identity)
+
+
+# Public.
 def get_builtin_constant(name):
+    constant = None
+
     match name:
-        case 'False': return False
-        case 'True': return True
-        case _: return None
+        case 'False': constant = False
+        case 'True': constant = True
+        case _: constant = None
+
+    return constant
 
 
 # Public.
@@ -24,19 +36,13 @@ def invoke_str(identity):
 # Public.
 def invoke_import(module_name):
     globals()[module_name] = importlib.import_module(module_name)
-    return f'Imported {module_name}.'
 
 
 # Public.
 def invoke_function(name, arguments):
     name = name.lower()
-    arguments = load_arguments(arguments)
-
-    if name == 'NoneType':
-        object = None
-    else:
-        function = resolve_function(name)
-        object = invoke_function_with_arguments(function, arguments)
+    function = resolve_function(name)
+    object = invoke_function_with_arguments(function, arguments)
 
     identity = id(object)
     objects[identity] = object
@@ -48,7 +54,6 @@ def invoke_function(name, arguments):
 def invoke_method(identity, name, arguments):
     identity = int(identity)
     name = name.lower()
-    arguments = load_arguments(arguments)
     object = objects[identity]
     function = getattr(object, name)
 
@@ -57,29 +62,6 @@ def invoke_method(identity, name, arguments):
     objects[identity] = object
 
     return str(identity)
-
-
-# Private.
-def load_arguments(string):
-    if string == '':
-        return []
-
-    arguments = []
-
-    token = string.split(';')
-
-    for i in range(0, len(token), 2):
-        type = token[i]
-        value = token[i+1]
-
-        if type == 'str':
-            arguments.append(value)
-        elif type == 'id':
-            identity = int(value)
-            object = objects[identity]
-            arguments.append(object)
-
-    return arguments
 
 
 # Private.
