@@ -1,0 +1,60 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.api.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'ooRexxAPI' library
+
+/*
+    The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
+*/
+::class api.testGroup public subclass ooTestCase
+    ::method test_IsString_expectedBehaviour
+        self~assertTrue(IsString('hello, world'))
+        self~assertTrue(IsString(3.14))
+
+        self~assertFalse(IsString(.Array~new))
+        self~assertFalse(IsString(.Test~new))
+
+    ::method test_IsString_unexpectedBehaviour
+        -- Integer numbers are recognized correctly as strings only if they are introduced as string literals first.
+        self~assertFalse(IsString(2))
+        self~assertFalse(IsString('2'))
+        self~assertFalse(IsString(2))
+
+        self~assertTrue(IsString('3'))
+        self~assertTrue(IsString(3))
+
+    ::method test_IsInstanceOfClass
+        self~assertTrue(IsInstanceOfClass('hello, world', 'String'))
+        self~assertTrue(IsInstanceOfClass(2, 'String'))
+        self~assertTrue(IsInstanceOfClass(3.14, 'String'))
+
+        self~assertFalse(IsInstanceOfClass(.Array~new, 'String'))
+        self~assertFalse(IsInstanceOfClass(.Test~new, 'String'))
+
+    ::method test_IsInstanceOfContextClass
+        self~assertTrue(IsInstanceOfContextClass('hello, world', 'String'))
+        self~assertTrue(IsInstanceOfContextClass(2, 'String'))
+        self~assertTrue(IsInstanceOfContextClass(3.14, 'String'))
+
+        self~assertFalse(IsInstanceOfContextClass(.Array~new, 'String'))
+        self~assertFalse(IsInstanceOfContextClass(.Test~new, 'String'))
+
+    ::method test_userDefinedClass_unexpectedBehaviour
+        self~assertFalse(IsInstanceOfClass(.Test~new, 'Test'))
+
+    ::method test_userDefinedClass_expectedBehaviour
+        self~assertTrue(IsInstanceOfContextClass(.Test~new, 'Test'))
+
+::class Test
+    -- No further declarations.
