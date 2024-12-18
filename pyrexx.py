@@ -1,5 +1,6 @@
 import builtins
 import importlib
+import sys
 
 
 objects = {}
@@ -68,13 +69,18 @@ def resolve_function(name):
 
     if '.' in name:
         module_name, function_name = name.rsplit('.', 1)
-
         module = globals()[module_name]
-        function = getattr(module, function_name)
+
+        for attribute in dir(module):
+            if function_name.lower() == attribute.lower():
+                function = getattr(module, attribute)
+                break
     elif name in globals():
         function = globals()[name]
     elif hasattr(builtins, name):
         function = getattr(builtins, name)
+    else:
+        sys.exit('Function not found:', name)
 
     return function
 
