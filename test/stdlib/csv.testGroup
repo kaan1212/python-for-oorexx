@@ -53,13 +53,13 @@ return testResult
 
         -- Write.
         f = py~open(file, 'w', kwargs)
-        writer = py~writer(f)
+        writer = py~csv.writer(f)
         writer~writerow(py['a', 'b', 'c'])
         f~close
 
         -- Read.
         f = py~open(file, kwargs)
-        reader = py~reader(f)
+        reader = py~csv.reader(f)
         row = py~next(reader)
         f~close
 
@@ -80,7 +80,7 @@ return testResult
 
         py~import('csv')
 
-        csvreader = py~reader(py['one,two,three'])
+        csvreader = py~csv.reader(py['one,two,three'])
         row = py~next(csvreader)
 
         self~assertSame("['one', 'two', 'three']", row)

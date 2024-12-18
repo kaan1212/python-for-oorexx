@@ -59,9 +59,9 @@ return testResult
         dict['two'] = py~int(2)
         dict['three'] = py~int(3)
 
-        py~delitem(dict, 'two')
+        py~operator.delitem(dict, 'two')
 
-        self~assertFalse(py~contains(dict, 'two'))
+        self~assertFalse(py~operator.contains(dict, 'two'))
 
     ::method test_contains
         expose py
@@ -70,4 +70,4 @@ return testResult
         dict['two'] = py~int(2)
         dict['three'] = py~int(3)
 
-        self~assertTrue(py~contains(dict, 'two'))
+        self~assertTrue(py~operator.contains(dict, 'two'))

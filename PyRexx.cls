@@ -128,14 +128,14 @@
         use arg value, key
 
         -- Indexing.
-        return runtime~callFunction('setitem', self, key, value)
+        return runtime~callFunction('operator.setitem', self, key, value)
 
     ::method '[]'
         expose runtime
 
         -- Indexing.
         if arg() == 1 then
-            return runtime~callFunction('getitem', self, arg(1))
+            return runtime~callFunction('operator.getitem', self, arg(1))
 
         /*
             Slicing.

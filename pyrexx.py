@@ -1,4 +1,3 @@
-from types import ModuleType
 import builtins
 import importlib
 
@@ -40,7 +39,6 @@ def invoke_import(module_name):
 
 # Public.
 def invoke_function(name, arguments):
-    name = name.lower()
     function = resolve_function(name)
     object = invoke_function_with_arguments(function, arguments)
 
@@ -66,18 +64,17 @@ def invoke_method(identity, name, arguments):
 
 # Private.
 def resolve_function(name):
-    if name in globals():
-        # Resolve a user-defined function.
+    name = name.lower()
+
+    if '.' in name:
+        module_name, function_name = name.rsplit('.', 1)
+
+        module = globals()[module_name]
+        function = getattr(module, function_name)
+    elif name in globals():
         function = globals()[name]
     elif hasattr(builtins, name):
-        # Resolve a built-in function.
         function = getattr(builtins, name)
-    else:
-        # Resolve a module function.
-        for object in globals().values():
-            if isinstance(object, ModuleType) and hasattr(object, name):
-                function = getattr(object, name)
-                break
 
     return function
 

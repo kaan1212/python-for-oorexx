@@ -37,7 +37,7 @@ return testResult
         objChild = py~dict
         objChild['bar'] = py~tuple(py['baz', py~None, py~float(1.0), py~int(2)])
         obj = py['foo', objChild]
-        actual = py~dumps(obj)
+        actual = py~json.dumps(obj)
 
         self~assertSame('["foo", {"bar": ["baz", null, 1.0, 2]}]', actual)
 
@@ -60,7 +60,7 @@ return testResult
 
         kwargs = py~kwargs
         kwargs['sort_keys'] = py~True
-        actual = py~dumps(dict, kwargs)
+        actual = py~json.dumps(dict, kwargs)
 
         self~assertSame('{"a": 0, "b": 0, "c": 0}', actual)
 
@@ -83,7 +83,7 @@ return testResult
 
         kwargs = py~kwargs
         kwargs['separators'] = py~tuple(py[',', ':'])
-        actual = py~dumps(obj, kwargs)
+        actual = py~json.dumps(obj, kwargs)
 
         self~assertSame('[1,2,3,{"4":5,"6":7}]', actual)
 
@@ -109,7 +109,7 @@ return testResult
         kwargs = py~kwargs
         kwargs['sort_keys'] = py~True
         kwargs['indent'] = py~int(4)
-        actual = py~dumps(dict, kwargs)
+        actual = py~json.dumps(dict, kwargs)
 
         nl = .String~nl
         expected = -
@@ -131,7 +131,7 @@ return testResult
         expose py
 
         py~import('json')
-        actual = py~loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
+        actual = py~json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
 
         expectedObjChild = py~dict
         expectedObjChild['bar'] = py['baz', py~None, py~float(1.0), py~int(2)]

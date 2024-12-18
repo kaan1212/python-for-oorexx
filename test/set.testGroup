@@ -65,13 +65,13 @@ return testResult
     ::method test_contains
         expose py
         set = py~set(py['a', 'b', 'c'])
-        actual = py~contains(set, 'a')
+        actual = py~operator.contains(set, 'a')
         self~assertTrue(actual)
 
     ::method test_containsNot
         expose py
         set = py~set(py['a', 'b', 'c'])
-        actual = py~contains(set, 'd')
+        actual = py~operator.contains(set, 'd')
         self~assertFalse(actual)
 
     ::method test_union
@@ -122,6 +122,6 @@ return testResult
         end
 
         expected = py['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
-        actual = py~contains(expected, concat)
+        actual = py~operator.contains(expected, concat)
 
         self~assertTrue(actual)
