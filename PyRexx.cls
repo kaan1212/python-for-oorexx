@@ -32,8 +32,16 @@
         use arg name
         call PyRexx_CallFunction 'invoke_import', name
 
+    ::method from
+        use arg name
+        return .PythonFromClause~new(name)
+
     ::method unknown
         use arg name, args
+
+        if name~dataType() == 'NUM' then
+            return self~callFunction('int', name)
+
         return self~callFunction(name, args)
 
     ::method callFunction
@@ -75,6 +83,14 @@
             objects[identity] = .PythonInstance~new(self, identity)
 
         return objects[identity]
+
+    ::method kwd
+        use arg keyword, value
+
+        kwargs = self~kwargs
+        kwargs[keyword] = value
+
+        return kwargs
 
     ::method kwargs
         use arg dict=(self~callFunction('dict'))
@@ -150,3 +166,14 @@
         use arg start=.nil, stop=.nil, step=.nil
         slice = runtime~callFunction('slice', start, stop, step)
         return self[slice]
+
+
+::class PythonFromClause
+    ::method init
+        expose name
+        use arg name
+
+    ::method import
+        expose name
+        fromlist = arg(1, 'Array')
+        call PyRexx_CallFunction 'invoke_from_import', .Array~of(name, fromlist)
