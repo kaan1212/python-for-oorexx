@@ -1,0 +1,144 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.datetime.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    datetime — Basic date and time types
+
+    See: https://docs.python.org/3/library/datetime.html
+*/
+::class datetime.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new
+
+    ::method test_datetime_combine_import
+        /*
+            Python example:
+            >>> import datetime
+            >>> d = datetime.date(2005, 7, 14)
+            >>> t = datetime.time(12, 30)
+            >>> datetime.datetime.combine(d, t)
+            datetime.datetime(2005, 7, 14, 12, 30)
+        */
+        expose py
+
+        py~import('datetime')
+        d = py~datetime.date(py~2005, py~7, py~14)
+        t = py~datetime.time(py~12, py~30)
+        dt = py~datetime.datetime.combine(d, t)
+
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', py~repr(dt))
+        self~assertSame(2005, dt~year)
+        self~assertSame(7, dt~month)
+        self~assertSame(14, dt~day)
+        self~assertSame(12, dt~hour)
+        self~assertSame(30, dt~minute)
+
+    ::method test_datetime_combine_fromImport
+        /*
+            Python example:
+            >>> from datetime import date, time, datetime
+            >>> d = date(2005, 7, 14)
+            >>> t = time(12, 30)
+            >>> datetime.combine(d, t)
+            datetime.datetime(2005, 7, 14, 12, 30)
+        */
+        expose py
+
+        py~from('datetime')~import('date', 'time', 'datetime')
+        d = py~date(py~2005, py~7, py~14)
+        t = py~time(py~12, py~30)
+        dt = py~datetime.combine(d, t)
+
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', py~repr(dt))
+        self~assertSame(2005, dt~year)
+        self~assertSame(7, dt~month)
+        self~assertSame(14, dt~day)
+        self~assertSame(12, dt~hour)
+        self~assertSame(30, dt~minute)
+
+    ::method test_date_usingConstructor
+        /*
+            Python example:
+            >>> from datetime import date
+            >>> date(1991, 2, 20)
+            datetime.date(1991, 2, 20)
+        */
+        expose py
+
+        py~from('datetime')~import('date')
+        date = py~date(py~1991, py~2, py~20)
+
+        self~assertSame('datetime.date(1991, 2, 20)', py~repr(date))
+        self~assertSame(1991, date~year)
+        self~assertSame(2, date~month)
+        self~assertSame(20, date~day)
+
+    ::method test_datetime_usingClassMethod
+        /*
+            Python example:
+            >>> from datetime import datetime
+            >>> datetime.fromisoformat('2011-11-04T00:05:23')
+            datetime.datetime(2011, 11, 4, 0, 5, 23)
+        */
+        expose py
+
+        py~from('datetime')~import('datetime')
+        datetime = py~datetime.fromisoformat('2011-11-04T00:05:23')
+
+        self~assertSame('datetime.datetime(2011, 11, 4, 0, 5, 23)', py~repr(datetime))
+        self~assertSame(2011, datetime~year)
+        self~assertSame(11, datetime~month)
+        self~assertSame(4, datetime~day)
+        self~assertSame(0, datetime~hour)
+        self~assertSame(5, datetime~minute)
+        self~assertSame(23, datetime~second)
+
+    ::method test_time_usingClassMethod
+        /*
+            Python example:
+            >>> from datetime import time
+            >>> time.fromisoformat('04:23:01')
+            datetime.time(4, 23, 1)
+        */
+        expose py
+
+        py~from('datetime')~import('time')
+        time = py~time.fromisoformat('04:23:01')
+
+        self~assertSame('datetime.time(4, 23, 1)', py~repr(time))
+        self~assertSame(4, time~hour)
+        self~assertSame(23, time~minute)
+        self~assertSame(1, time~second)
+
+    ::method test_timedelta_usingConstructor
+        /*
+            Python example:
+            >>> from datetime import timedelta
+            >>> duration = timedelta(seconds=11235813)
+            >>> duration.days, duration.seconds
+            (130, 3813)
+            >>> duration.total_seconds()
+            11235813.0
+        */
+        expose py
+
+        py~from('datetime')~import('timedelta')
+        duration = py~timedelta(py~kwd('seconds', py~11235813))
+
+        self~assertSame(130, duration~days)
+        self~assertSame(3813, duration~seconds)
+        self~assertSame(11235813.0, duration~total_seconds())
