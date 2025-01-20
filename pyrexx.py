@@ -8,6 +8,33 @@ objects = {}
 
 
 # Public.
+def get_corresponding_python_methodnames(classname, methodnames):
+    _class = resolve_function(classname)
+    methodnames = [m.lower() for m in methodnames]
+
+    result = []
+
+    for m in methodnames:
+        for n in dir(_class):
+            if m == n.lower():
+                result.append(n)
+
+    return result
+
+
+# Public.
+def set_globals(key, value):
+    globals()[key] = value
+
+
+# Public.
+def store_object(object):
+    identity = id(object)
+    objects[identity] = object
+    return str(identity)
+
+
+# Public.
 def debug_on():
     global debug_enabled
     debug_enabled = True
@@ -68,7 +95,11 @@ def invoke_from_import(name, fromlist):
 # Public.
 def invoke_function(name, arguments):
     function = resolve_function(name)
-    object = invoke_function_with_arguments(function, arguments)
+
+    if isinstance(function, dict):
+        object = function
+    else:
+        object = invoke_function_with_arguments(function, arguments)
 
     identity = id(object)
     objects[identity] = object
@@ -82,13 +113,18 @@ def invoke_method(identity, name, arguments):
     object = objects[identity]
     name = name.lower()
 
-    try:
-        value = getattr(object, name)
-    except AttributeError as err:
-        print('AttributeError:', err)
+    if name.endswith('='):
+        name = name[:-1]
+        value = arguments[0]
+        setattr(object, name, value)
+    else:
+        try:
+            value = getattr(object, name)
+        except AttributeError as err:
+            print('AttributeError:', err)
 
-    if callable(value):
-        value = invoke_function_with_arguments(value, arguments)
+        if callable(value):
+            value = invoke_function_with_arguments(value, arguments)
 
     identity = id(value)
     objects[identity] = value
@@ -116,8 +152,8 @@ def resolve_function(name):
 # Private.
 def resolve_in_globals(name):
     # Shortcut for exact match.
-    if name in globals():
-        value = globals()[name]
+    if contains_caseless(globals(), name):
+        value = getitem_caseless(globals(), name)
         debug('    globals():', name)
         return value
     elif '.' not in name:
@@ -147,6 +183,36 @@ def resolve_in_globals(name):
         debug('    Attribute:', value)
 
     return value
+
+
+# Private.
+def contains_caseless(dict, key):
+    key = key.lower()
+    matches = [k for k in dict.keys() if k.lower() == key]
+
+    match len(matches):
+        case 1:
+            return True
+        case 0:
+            return False
+        case _:
+            print(f'Error: dict has no unambiguous key {key}: {matches}')
+            sys.exit(1)
+
+
+# Private.
+def getitem_caseless(dict, key):
+    key = key.lower()
+    matches = [k for k in dict.keys() if k.lower() == key]
+
+    match len(matches):
+        case 1:
+            return dict[matches[0]]
+        case 0:
+            return None
+        case _:
+            print(f'Error: dict has no unambiguous key {key}: {matches}')
+            sys.exit(1)
 
 
 # Private.

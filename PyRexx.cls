@@ -116,6 +116,26 @@
             ~changeStr('\n', .String~nl),
             ~changeStr('\t', .String~tab)
 
+    ::method defineClass
+        use arg rexxClassOrObject, pythonBaseClassName
+
+        if rexxClassOrObject~isInstanceOf(.Class) then do
+            args = arg(3, 'Array')
+
+            rexxClass = rexxClassOrObject
+            rexxObject = rexxClass~sendWith('new', args)
+        end
+        else do
+            rexxObject = rexxClassOrObject
+            rexxClass = rexxObject~class
+        end
+
+        rexxMethodNames = rexxObject~instanceMethods(rexxClass)~allIndexes
+        pythonMethodNames = self~callFunction('get_corresponding_python_methodnames', pythonBaseClassName, rexxMethodNames)
+
+        rexxClassName = rexxClass~id
+        call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNames, self
+
 
 ::class PythonInstance
     ::attribute runtime get private
@@ -133,6 +153,20 @@
     ::method makeString
         expose runtime
         return runtime~makeString(self)
+
+    ::method makeArray
+        expose runtime
+
+        -- Materialize len for performance.
+        len = runtime~callFunction('len', self)~makeString
+        array = .Array~new(len)
+
+        do i=0 to len-1
+            index = runtime~callFunction('int', i)
+            array~append(self[index])
+        end
+
+        return array
 
     ::method '='
         use arg b
