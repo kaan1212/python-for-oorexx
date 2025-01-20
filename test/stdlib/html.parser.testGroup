@@ -1,0 +1,375 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.html.parser.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    html.parser — Simple HTML and XHTML parser
+
+    See:
+    - https://docs.python.org/3/library/html.parser.html
+
+    Examples:
+    - https://docs.python.org/3/library/html.parser.html#example-html-parser-application
+    - https://docs.python.org/3/library/html.parser.html#examples
+*/
+::class MyHTMLParser_say
+    ::method handle_starttag
+        use arg pself, tag, attrs
+        say 'Encountered a start tag:' tag
+
+    ::method handle_endtag
+        use arg pself, tag
+        say 'Encountered an end tag :' tag
+
+    ::method handle_data
+        use arg pself, data
+        say 'Encountered some data  :' data
+
+
+::class MyHTMLParser_queue
+    ::method init
+        expose queue
+        use arg queue
+
+    ::method handle_starttag
+        expose queue
+        use arg pself, tag, attrs
+        queue~append('Encountered a start tag:' tag)
+
+    ::method handle_endtag
+        expose queue
+        use arg pself, tag
+        queue~append('Encountered an end tag :' tag)
+
+    ::method handle_data
+        expose queue
+        use arg pself, data
+        queue~append('Encountered some data  :' data)
+
+
+::class MyHTMLParser_print
+    ::method init
+        expose py file
+        use arg py, file
+
+    ::method handle_starttag
+        expose py file
+        use arg pself, tag, attrs
+        py~print('Encountered a start tag:' tag, py~kwd('file', file))
+
+    ::method handle_endtag
+        expose py file
+        use arg pself, tag, attrs
+        py~print('Encountered an end tag :' tag, py~kwd('file', file))
+
+    ::method handle_data
+        expose py file
+        use arg pself, data
+        py~print('Encountered some data  :' data, py~kwd('file', file))
+
+
+::class MyHTMLParser_pself
+    ::method init
+        expose queue
+        use arg queue
+
+    ::method handle_starttag
+        expose queue
+        use arg pself, tag, attrs
+        queue~append('Encountered a start tag:' tag pself~getpos())
+
+    ::method handle_endtag
+        expose queue
+        use arg pself, tag
+        queue~append('Encountered an end tag :' tag pself~getpos())
+
+    ::method handle_data
+        expose queue
+        use arg pself, data
+        queue~append('Encountered some data  :' data pself~getpos())
+
+
+::class MyHTMLParserExtended
+    ::method init
+        expose py
+        use arg py
+
+    ::method handle_starttag
+        use arg pself, tag, attrs
+        say 'Start tag:' tag
+
+        do attr over attrs
+            say '     attr:' attr
+        end
+
+    ::method handle_endtag
+        use arg pself, tag
+        say 'End tag  :' tag
+
+    ::method handle_data
+        use arg pself, data
+        say 'Data     :' data
+
+    ::method handle_comment
+        use arg pself, data
+        say 'Comment  :' data
+
+    ::method handle_entityref
+        expose py
+        use arg pself, name
+        c = py~chr(py~name2codepoint[name])
+        say 'Named ent:' c
+
+    ::method handle_charref
+        expose py
+        use arg pself, name
+
+        if name~startswith('x') then
+            c = py~chr(py~int(name[py~1, py~None], py~16))
+        else
+            c = py~chr(py~int(name))
+
+        say 'Num ent  :' c
+
+    ::method handle_decl
+        use arg pself, data
+        say 'Decl     :' data
+
+
+::class html.parser.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new()
+
+    ::method startRexxOutputRecording
+        expose defaultOutput output
+
+        defaultOutput = .local~output
+        output = .RexxQueue~new()
+        .local~output = output
+
+    ::method stopRexxOutputRecording
+        expose defaultOutput
+        .local~output = defaultOutput
+
+    ::method test_MyHTMLParser_say
+        expose py output
+        py~from('html.parser')~import('HTMLParser')
+
+        py~defineClass(.MyHTMLParser_say, 'HTMLParser')
+
+        self~startRexxOutputRecording()
+        parser = py~MyHTMLParser_say()
+        parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
+        self~stopRexxOutputRecording()
+
+        self~assertSame('Encountered a start tag: html', output~pull)
+        self~assertSame('Encountered a start tag: head', output~pull)
+        self~assertSame('Encountered a start tag: title', output~pull)
+        self~assertSame('Encountered some data  : Test', output~pull)
+        self~assertSame('Encountered an end tag : title', output~pull)
+        self~assertSame('Encountered an end tag : head', output~pull)
+        self~assertSame('Encountered a start tag: body', output~pull)
+        self~assertSame('Encountered a start tag: h1', output~pull)
+        self~assertSame('Encountered some data  : Parse me!', output~pull)
+        self~assertSame('Encountered an end tag : h1', output~pull)
+        self~assertSame('Encountered an end tag : body', output~pull)
+        self~assertSame('Encountered an end tag : html', output~pull)
+
+    ::method test_MyHTMLParser_queue
+        expose py
+        py~from('html.parser')~import('HTMLParser')
+
+        queue = .Queue~new
+        py~defineClass(.MyHTMLParser_queue, 'HTMLParser', queue)
+
+        parser = py~MyHTMLParser_queue()
+        parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
+
+        self~assertSame('Encountered a start tag: html', queue~pull)
+        self~assertSame('Encountered a start tag: head', queue~pull)
+        self~assertSame('Encountered a start tag: title', queue~pull)
+        self~assertSame('Encountered some data  : Test', queue~pull)
+        self~assertSame('Encountered an end tag : title', queue~pull)
+        self~assertSame('Encountered an end tag : head', queue~pull)
+        self~assertSame('Encountered a start tag: body', queue~pull)
+        self~assertSame('Encountered a start tag: h1', queue~pull)
+        self~assertSame('Encountered some data  : Parse me!', queue~pull)
+        self~assertSame('Encountered an end tag : h1', queue~pull)
+        self~assertSame('Encountered an end tag : body', queue~pull)
+        self~assertSame('Encountered an end tag : html', queue~pull)
+
+    ::method test_MyHTMLParser_print
+        expose py
+        py~from('html.parser')~import('HTMLParser')
+        py~from('io')~import('StringIO')
+
+        file = py~StringIO()
+        py~defineClass(.MyHTMLParser_print, 'HTMLParser', py, file)
+
+        parser = py~MyHTMLParser_print()
+        parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
+
+        lines = file~getvalue()~splitlines()
+        lines~reverse()
+
+        self~assertSame('Encountered a start tag: html', lines~pop())
+        self~assertSame('Encountered a start tag: head', lines~pop())
+        self~assertSame('Encountered a start tag: title', lines~pop())
+        self~assertSame('Encountered some data  : Test', lines~pop())
+        self~assertSame('Encountered an end tag : title', lines~pop())
+        self~assertSame('Encountered an end tag : head', lines~pop())
+        self~assertSame('Encountered a start tag: body', lines~pop())
+        self~assertSame('Encountered a start tag: h1', lines~pop())
+        self~assertSame('Encountered some data  : Parse me!', lines~pop())
+        self~assertSame('Encountered an end tag : h1', lines~pop())
+        self~assertSame('Encountered an end tag : body', lines~pop())
+        self~assertSame('Encountered an end tag : html', lines~pop())
+
+    ::method test_MyHTMLParser_pself
+        expose py
+        py~from('html.parser')~import('HTMLParser')
+
+        queue = .Queue~new
+        py~defineClass(.MyHTMLParser_pself, 'HTMLParser', queue)
+
+        parser = py~MyHTMLParser_pself()
+        parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
+
+        self~assertSame('Encountered a start tag: html (1, 0)', queue~pull)
+        self~assertSame('Encountered a start tag: head (1, 6)', queue~pull)
+        self~assertSame('Encountered a start tag: title (1, 12)', queue~pull)
+        self~assertSame('Encountered some data  : Test (1, 19)', queue~pull)
+        self~assertSame('Encountered an end tag : title (1, 23)', queue~pull)
+        self~assertSame('Encountered an end tag : head (1, 31)', queue~pull)
+        self~assertSame('Encountered a start tag: body (1, 38)', queue~pull)
+        self~assertSame('Encountered a start tag: h1 (1, 44)', queue~pull)
+        self~assertSame('Encountered some data  : Parse me! (1, 48)', queue~pull)
+        self~assertSame('Encountered an end tag : h1 (1, 57)', queue~pull)
+        self~assertSame('Encountered an end tag : body (1, 62)', queue~pull)
+        self~assertSame('Encountered an end tag : html (1, 69)', queue~pull)
+
+    ::method test_MyHTMLParserExtended
+        expose py output
+        py~from('html.parser')~import('HTMLParser')
+        py~from('html.entities')~import('name2codepoint')
+
+        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+
+        self~startRexxOutputRecording()
+        parser = py~MyHTMLParserExtended()
+
+        parser~feed('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">')
+        self~assertSame('Decl     : DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"', output~pull)
+
+        parser~feed('<img src="python-logo.png" alt="The Python logo">')
+        self~assertSame('Start tag: img', output~pull)
+        self~assertSame("     attr: ('src', 'python-logo.png')", output~pull)
+        self~assertSame("     attr: ('alt', 'The Python logo')", output~pull)
+
+        parser~feed('<h1>Python</h1>')
+        self~assertSame('Start tag: h1', output~pull)
+        self~assertSame('Data     : Python', output~pull)
+        self~assertSame('End tag  : h1', output~pull)
+
+        parser~feed('<style type="text/css">#python { color: green }</style>')
+        self~assertSame('Start tag: style', output~pull)
+        self~assertSame("     attr: ('type', 'text/css')", output~pull)
+        self~assertSame('Data     : #python { color: green }', output~pull)
+        self~assertSame('End tag  : style', output~pull)
+
+        parser~feed('<script type="text/javascript">alert("<strong>hello!</strong>");</script>')
+        self~assertSame('Start tag: script', output~pull)
+        self~assertSame("     attr: ('type', 'text/javascript')", output~pull)
+        self~assertSame('Data     : alert("<strong>hello!</strong>");', output~pull)
+        self~assertSame('End tag  : script', output~pull)
+
+        parser~feed('<!-- a comment --><!--[if IE 9]>IE-specific content<![endif]-->')
+        self~assertSame('Comment  :  a comment ', output~pull)
+        self~assertSame('Comment  : [if IE 9]>IE-specific content<![endif]', output~pull)
+
+        parser~convert_charrefs = py~False
+        parser~feed('&gt;&#62;&#x3E;')
+        self~assertSame('Named ent: >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
+
+        do chunk over .Array~of('<sp', 'an>buff', 'ered ', 'text</s', 'pan>')
+            parser~feed(chunk)
+        end
+
+        self~assertSame('Start tag: span', output~pull)
+        self~assertSame('Data     : buff', output~pull)
+        self~assertSame('Data     : ered ', output~pull)
+        self~assertSame('Data     : text', output~pull)
+        self~assertSame('End tag  : span', output~pull)
+
+        parser~feed('<p><a class=link href=#main>tag soup</p ></a>')
+        self~assertSame('Start tag: p', output~pull)
+        self~assertSame('Start tag: a', output~pull)
+        self~assertSame("     attr: ('class', 'link')", output~pull)
+        self~assertSame("     attr: ('href', '#main')", output~pull)
+        self~assertSame('Data     : tag soup', output~pull)
+        self~assertSame('End tag  : p', output~pull)
+        self~assertSame('End tag  : a', output~pull)
+
+        self~stopRexxOutputRecording()
+
+    ::method test_MyHTMLParserExtended_convert_charrefs_default
+        expose py output
+        py~from('html.parser')~import('HTMLParser')
+        py~from('html.entities')~import('name2codepoint')
+
+        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+
+        self~startRexxOutputRecording()
+        parser = py~MyHTMLParserExtended()
+        parser~feed('&gt;&#62;&#x3E;')
+        self~stopRexxOutputRecording()
+
+        self~assertSame('Data     : >>>', output~pull)
+
+    ::method test_MyHTMLParserExtended_convert_charrefs_constructor
+        expose py output
+        py~from('html.parser')~import('HTMLParser')
+        py~from('html.entities')~import('name2codepoint')
+
+        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+
+        self~startRexxOutputRecording()
+        parser = py~MyHTMLParserExtended(py~kwd('convert_charrefs', py~False))
+        parser~feed('&gt;&#62;&#x3E;')
+        self~stopRexxOutputRecording()
+
+        self~assertSame('Named ent: >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
+
+    ::method test_MyHTMLParserExtended_convert_charrefs_attribute
+        expose py output
+        py~from('html.parser')~import('HTMLParser')
+        py~from('html.entities')~import('name2codepoint')
+
+        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+
+        self~startRexxOutputRecording()
+        parser = py~MyHTMLParserExtended()
+        parser~convert_charrefs = py~False
+        parser~feed('&gt;&#62;&#x3E;')
+        self~stopRexxOutputRecording()
+
+        self~assertSame('Named ent: >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
+        self~assertSame('Num ent  : >', output~pull)
