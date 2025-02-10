@@ -1,0 +1,66 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.random.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    random — Generate pseudo-random numbers
+
+    See:
+    - https://docs.python.org/3/library/random.html
+
+    Examples:
+    - https://docs.python.org/3/library/random.html#examples
+*/
+::class random.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new()
+
+    ::method test_random
+        expose py
+        py~from('random')~import('random', 'seed')
+
+        py~seed(py~0)
+        actual = py~random()
+
+        self~assertSame(0.8444218515250481, actual)
+
+    ::method test_randrange
+        expose py
+        py~from('random')~import('randrange', 'seed')
+
+        py~seed(py~0)
+        actual = py~randrange(py~10)
+
+        self~assertSame(6, actual)
+
+    ::method test_choice
+        expose py
+        py~from('random')~import('choice', 'seed')
+
+        py~seed(py~0)
+        actual = py~choice(py['win', 'lose', 'draw'])
+
+        self~assertSame('lose', actual)
+
+    ::method test_shuffle
+        expose py
+        py~from('random')~import('shuffle', 'seed')
+
+        py~seed(py~0)
+        deck = py~str('ace two three four')~split()
+        py~shuffle(deck)
+
+        self~assertSame("['three', 'ace', 'two', 'four']", deck)
