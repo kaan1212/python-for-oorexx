@@ -1,0 +1,37 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.logging.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    logging — Logging facility for Python
+
+    See:
+    - https://docs.python.org/3/library/logging.html
+
+    Tutorial:
+    - https://docs.python.org/3/howto/logging.html
+*/
+::class logging.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py
+        py = .PyRexx~new()
+
+    ::method test
+        expose py
+        py~import('logging')
+
+        logger = py~logging.getLogger(py~__name__)
+        logger~warning('This warning is printed out on the console.')
+        logger~error('This error is printed out on the console.')
