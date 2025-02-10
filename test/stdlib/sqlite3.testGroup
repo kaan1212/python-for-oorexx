@@ -1,0 +1,54 @@
+#!/usr/bin/env rexx
+
+parse source . . s
+
+group = .TestGroup~new(s)
+group~add(.sqlite3.testGroup)
+
+if group~isAutomatedTest then return group
+
+testResult = group~suite~execute~~print
+
+return testResult
+
+::requires 'ooTest.frm'
+::requires 'PyRexx.cls'
+
+/*
+    sqlite3 — DB-API 2.0 interface for SQLite databases
+
+    See:
+    - https://docs.python.org/3/library/sqlite3.html
+
+    Tutorial:
+    - https://docs.python.org/3/library/sqlite3.html
+*/
+::class sqlite3.testGroup public subclass ooTestCase
+    ::method setUp
+        expose py database
+        py = .PyRexx~new()
+        database = 'test-output/test_sqlite3.db'
+
+        py~from('os')~import('remove')
+        py~from('os.path')~import('isfile')
+
+        if py~isfile(database) then
+            py~remove(database)
+
+    ::method test
+        expose py database
+        py~import('sqlite3')
+
+        con = py~sqlite3.connect(database)
+        cur = con~cursor()
+
+        cur~execute('CREATE TABLE movie(title, year, score)')
+        cur~execute("INSERT INTO movie VALUES ('Monty Python and the Holy Grail', 1975, 8.2), ('And Now for Something Completely Different', 1971, 7.5)")
+        con~commit()
+
+        res = cur~execute('SELECT score FROM movie')
+        actual = res~fetchall()
+
+        con~close()
+
+        self~assertSame('[(8.2,), (7.5,)]', actual)
