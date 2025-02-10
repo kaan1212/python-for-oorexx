@@ -96,10 +96,10 @@ def invoke_from_import(name, fromlist):
 def invoke_function(name, arguments):
     function = resolve_function(name)
 
-    if isinstance(function, dict):
-        object = function
-    else:
+    if callable(function):
         object = invoke_function_with_arguments(function, arguments)
+    else:
+        object = function
 
     identity = id(object)
     objects[identity] = object
