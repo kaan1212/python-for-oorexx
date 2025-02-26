@@ -1,0 +1,71 @@
+name: C/C++ CI
+
+on: workflow_dispatch
+
+env:
+  # We use our own download mirror because SourceForge is unreliable.
+  # OOREXX_DOWNLOAD_URL: https://sourceforge.net/projects/oorexx/files/oorexx/5.1.0beta/portable/oorexx-5.1.0-12916.windows.x86_64-portable-release.zip
+  OOREXX_DOWNLOAD_URL: https://github.com/kaan1212/oorexx/raw/refs/heads/main/oorexx-5.1.0-12916.windows.x86_64-portable-release.zip
+  OOREXX_EXTRACT_DIR: oorexx-5.1.0-12916.windows.x86_64-portable-release
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout repository.
+      uses: actions/checkout@v4
+
+    - name: Delete Lib, python312.dll, PyRexx.dll.
+      run: |
+        rm -r Lib
+        rm python312.dll
+        rm PyRexx.dll
+        ls
+
+    - name: Setup Python.
+      uses: actions/setup-python@v5
+      with:
+        # python-version: '3.9.13'
+        # python-version: '3.12.7'
+        python-version: '3.10.0'
+
+    - name: Setup ooRexx.
+      run: |
+        curl -Lo oorexx.zip $env:OOREXX_DOWNLOAD_URL
+        tar -xf oorexx.zip
+        echo "oorexxLocation=$env:GITHUB_WORKSPACE\$env:OOREXX_EXTRACT_DIR" >> "$env:GITHUB_ENV"
+
+    - name: Set environment variables.
+      run: |
+        echo "$env:oorexxLocation\bin" >> "$env:GITHUB_PATH"
+        echo "PYTHONPATH=." >> "$env:GITHUB_ENV"
+
+    - name: Compile.
+      run: g++ -shared -o PyRexx.dll PyRexx.cpp `
+        -I"$env:oorexxLocation"\include -L"$env:oorexxLocation"\lib  -lrexxapi `
+        -I"$env:pythonLocation"\include -L"$env:pythonLocation"\libs -lpython310
+
+    - name: Run tests.
+      run: |
+        rexx testOORexx -R test -x datetime.testGroup
+        rexx testOORexx -R test -f datetime.testGroup
+        rexx testOORexx -R test
+
+
+
+
+
+
+    # # Run tests.
+    # - name: Run tests.
+    #   working-directory: oorexx-5.1.0-12916.windows.x86_64-portable-release\bin
+    #   run: |
+    #     .\rexx ..\..\testOORexx -R test -x datetime.testGroup
+    #     .\rexx ..\..\testOORexx -R test -f datetime.testGroup
+    #     .\rexx ..\..\testOORexx -R test
+
+
+
+
+    # - run: Get-ChildItem "env:"
