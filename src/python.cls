@@ -80,7 +80,7 @@
         use arg identity
 
         if \ objects~hasIndex(identity) then
-            objects[identity] = .PythonInstance~new(self, identity)
+            objects[identity] = .PythonObject~new(self, identity)
 
         return objects[identity]
 
@@ -137,7 +137,7 @@
         call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNames, self
 
 
-::class PythonInstance
+::class PythonObject
     ::attribute runtime get private
     ::attribute identity get
 

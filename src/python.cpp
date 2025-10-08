@@ -25,7 +25,7 @@ RexxRoutine0(int, PyRexx_Finalize) {
 
 PyObject* rexxToPythonObject(RexxCallContext* context, RexxObjectPtr obj, int indent) {
 	RexxClassObject stringClass = context->FindClass("String");
-	RexxClassObject pythonInstanceClass = context->FindContextClass("PythonInstance");
+	RexxClassObject pythonInstanceClass = context->FindContextClass("PythonObject");
 
 	if (obj == NULL) {
 		if (debug) printf("%*sNULL\n", indent, "");
@@ -147,7 +147,7 @@ RexxRoutine5(RexxObjectPtr, PyRexx_DefineClass, RexxObjectPtr, rexxObject, CSTRI
 	_rexxObject = rexxObject;
 	_rexxPyRexx = rexxPyRexx;
 
-	pythonInstanceClass = context->FindContextClass("PythonInstance");
+	pythonInstanceClass = context->FindContextClass("PythonObject");
 
 	// Create a dictionary of instance methods.
 	PyObject* dict = PyDict_New();
