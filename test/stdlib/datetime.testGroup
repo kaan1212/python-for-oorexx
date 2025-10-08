@@ -12,7 +12,7 @@ testResult = group~suite~execute~~print
 return testResult
 
 ::requires 'ooTest.frm'
-::requires 'PyRexx.cls'
+::requires 'python.cls'
 
 /*
     datetime — Basic date and time types

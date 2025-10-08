@@ -12,7 +12,7 @@ testResult = group~suite~execute~~print
 return testResult
 
 ::requires 'ooTest.frm'
-::requires 'PyRexx.cls'
+::requires 'python.cls'
 
 /*
     These tests cover Python's unique feature of positional and keyword function arguments.

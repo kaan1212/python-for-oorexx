@@ -6,10 +6,10 @@ set(oorexx_library $ENV{REXX_HOME}/api)
 set(python_version 3.12.7)
 
 # Variables.
-set(target PyRexx)
+set(target python)
 
 # Target.
-add_library(${target} SHARED src/PyRexx.cpp)
+add_library(${target} SHARED src/python.cpp)
 
 # ooRexx library.
 target_include_directories(${target} PRIVATE ${oorexx_library})
@@ -27,5 +27,5 @@ add_custom_command(
     ARGS -E copy $<TARGET_FILE:${target}> ${CMAKE_SOURCE_DIR}/dist/$<TARGET_FILE_NAME:${target}>
 
     COMMAND ${CMAKE_COMMAND}
-    ARGS -E copy ${CMAKE_SOURCE_DIR}/src/PyRexx.cls ${CMAKE_SOURCE_DIR}/src/pyrexx.py ${CMAKE_SOURCE_DIR}/dist
+    ARGS -E copy ${CMAKE_SOURCE_DIR}/src/python.cls ${CMAKE_SOURCE_DIR}/src/python.py ${CMAKE_SOURCE_DIR}/dist
 )

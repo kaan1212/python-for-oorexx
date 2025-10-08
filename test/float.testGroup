@@ -12,7 +12,7 @@ testResult = group~suite~execute~~print
 return testResult
 
 ::requires 'ooTest.frm'
-::requires 'PyRexx.cls'
+::requires 'python.cls'
 
 /*
     Examples: https://docs.python.org/3/library/functions.html#float
