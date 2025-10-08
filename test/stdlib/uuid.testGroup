@@ -26,7 +26,7 @@ return testResult
 ::class uuid.testGroup public subclass ooTestCase
     ::method setUp
         expose py re
-        py = .PyRexx~new()
+        py = .Python~new()
         re = .RegularExpression~new('[:xdigit:]{8}-[:xdigit:]{4}-[:xdigit:]{4}-[:xdigit:]{4}-[:xdigit:]{12}')
 
     ::method test_uuid1

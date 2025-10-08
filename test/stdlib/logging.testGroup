@@ -26,7 +26,7 @@ return testResult
 ::class logging.testGroup public subclass ooTestCase
     ::method setUp
         expose py
-        py = .PyRexx~new()
+        py = .Python~new()
 
     ::method test
         expose py

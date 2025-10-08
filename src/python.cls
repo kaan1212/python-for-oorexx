@@ -2,7 +2,7 @@
 ::requires 'python' library
 
 
-::class PyRexx public
+::class Python public
     ::attribute False get
     ::attribute True get
     ::attribute None get

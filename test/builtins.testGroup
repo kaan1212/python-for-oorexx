@@ -22,7 +22,7 @@ return testResult
 ::class builtins.testGroup public subclass ooTestCase
     ::method setUp
         expose py
-        py = .PyRexx~new
+        py = .Python~new
 
     -- Return the absolute value of a number.
     ::method test_abs

@@ -26,7 +26,7 @@ return testResult
 ::class sqlite3.testGroup public subclass ooTestCase
     ::method setUp
         expose py database
-        py = .PyRexx~new()
+        py = .Python~new()
         database = 'test-output/test_sqlite3.db'
 
         py~from('os')~import('remove')
