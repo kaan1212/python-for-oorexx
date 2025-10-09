@@ -4,7 +4,7 @@ import sys
 
 
 debug_enabled = False
-objects = {}
+registry = {}
 
 
 # Public.
@@ -30,7 +30,7 @@ def set_globals(key, value):
 # Public.
 def store_object(object):
     identity = id(object)
-    objects[identity] = object
+    registry[identity] = object
     return str(identity)
 
 
@@ -75,7 +75,7 @@ def get_builtin_constant(name):
 # Public.
 def invoke_str(identity):
     identity = int(identity)
-    object = objects[identity]
+    object = registry[identity]
     return str(object)
 
 
@@ -102,7 +102,7 @@ def invoke_function(name, arguments):
         object = function
 
     identity = id(object)
-    objects[identity] = object
+    registry[identity] = object
 
     return str(identity)
 
@@ -110,7 +110,7 @@ def invoke_function(name, arguments):
 # Public.
 def invoke_method(identity, name, arguments):
     identity = int(identity)
-    object = objects[identity]
+    object = registry[identity]
     name = name.lower()
 
     if name.endswith('='):
@@ -127,7 +127,7 @@ def invoke_method(identity, name, arguments):
             value = invoke_function_with_arguments(value, arguments)
 
     identity = id(value)
-    objects[identity] = value
+    registry[identity] = value
 
     return str(identity)
 

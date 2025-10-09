@@ -7,11 +7,11 @@
     ::attribute True get
     ::attribute None get
 
-    ::attribute objects get private
+    ::attribute registry get private
 
     ::method init
-        expose False True None objects
-        objects = .Directory~new
+        expose False True None registry
+        registry = .Directory~new
 
         debug = .false
         call PyRexx_Initialize 'python', debug
@@ -76,13 +76,13 @@
         end
 
     ::method getPythonInstance private
-        expose objects
+        expose registry
         use arg identity
 
-        if \ objects~hasIndex(identity) then
-            objects[identity] = .PythonObject~new(self, identity)
+        if \ registry~hasIndex(identity) then
+            registry[identity] = .PythonObject~new(self, identity)
 
-        return objects[identity]
+        return registry[identity]
 
     ::method kwd
         use arg keyword, value
