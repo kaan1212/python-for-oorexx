@@ -2,7 +2,7 @@
 ::requires 'python' library
 
 
-::class Python public
+::class 'Python' public
     ::attribute False get
     ::attribute True get
     ::attribute None get
@@ -137,7 +137,7 @@
         call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNames, self
 
 
-::class PythonObject
+::class 'PythonObject'
     ::attribute runtime get private
     ::attribute identity get
 
@@ -202,7 +202,7 @@
         return self[slice]
 
 
-::class PythonFromClause
+::class 'PythonFromClause'
     ::method init
         expose name
         use arg name
