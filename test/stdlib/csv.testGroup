@@ -12,7 +12,7 @@ testResult = group~suite~execute~~print
 return testResult
 
 ::requires 'ooTest.frm'
-::requires 'python.cls'
+::requires 'orxpython.cls'
 
 /*
     See: https://docs.python.org/3/library/csv.html

@@ -1,5 +1,5 @@
--- PyRexx.dll
-::requires 'python' library
+-- orxpython.dll
+::requires 'orxpython' library
 
 
 ::class 'Python' public
@@ -14,7 +14,7 @@
         registry = .Directory~new
 
         debug = .false
-        call PyRexx_Initialize 'python', debug
+        call PyRexx_Initialize 'orxpython', debug
 
         False = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'False'))
         True = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'True'))
