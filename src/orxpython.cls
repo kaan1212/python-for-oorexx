@@ -7,11 +7,11 @@
     ::attribute True get
     ::attribute None get
 
-    ::attribute registry get private
+    ::attribute pythonObjectRegistry get private
 
     ::method init
-        expose False True None registry
-        registry = .StringTable~new
+        expose False True None pythonObjectRegistry
+        pythonObjectRegistry = .StringTable~new
 
         debug = .false
         call PyRexx_Initialize 'orxpython', debug
@@ -76,13 +76,13 @@
         end
 
     ::method getPythonProxyObject private
-        expose registry
+        expose pythonObjectRegistry
         use arg identity
 
-        if \ registry~hasIndex(identity) then
-            registry[identity] = .PythonObject~new(self, identity)
+        if \ pythonObjectRegistry~hasIndex(identity) then
+            pythonObjectRegistry[identity] = .PythonObject~new(self, identity)
 
-        return registry[identity]
+        return pythonObjectRegistry[identity]
 
     ::method kwd
         use arg keyword, value
