@@ -11,7 +11,7 @@
 
     ::method init
         expose False True None registry
-        registry = .Directory~new
+        registry = .StringTable~new
 
         debug = .false
         call PyRexx_Initialize 'orxpython', debug
