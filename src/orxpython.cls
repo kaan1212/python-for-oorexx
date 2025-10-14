@@ -16,9 +16,9 @@
         debug = .false
         call PyRexx_Initialize 'orxpython', debug
 
-        False = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'False'))
-        True = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'True'))
-        None = self~getPythonInstance(PyRexx_CallFunction('get_builtin_constant_identity', 'None'))
+        False = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'False'))
+        True = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'True'))
+        None = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'None'))
         /* Alternative:
         False = self~callFunction('get_builtin_constant', 'False')
         True = self~callFunction('get_builtin_constant', 'True')
@@ -52,7 +52,7 @@
 
         identity = PyRexx_CallFunction('invoke_function', .Array~of(name, args))
 
-        return self~getPythonInstance(identity)
+        return self~getPythonProxyObject(identity)
 
     ::method callMethod
         use arg identity, name, args
@@ -62,7 +62,7 @@
 
         identity = PyRexx_CallFunction('invoke_method', .Array~of(identity, name, args))
 
-        return self~getPythonInstance(identity)
+        return self~getPythonProxyObject(identity)
 
     ::method makeString
         expose False True None
@@ -75,7 +75,7 @@
             otherwise return PyRexx_CallFunction('invoke_str', pythonInstance~identity)
         end
 
-    ::method getPythonInstance private
+    ::method getPythonProxyObject private
         expose registry
         use arg identity
 
