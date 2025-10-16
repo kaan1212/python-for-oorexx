@@ -153,6 +153,14 @@
         expose runtime identity
         use arg runtime, identity
 
+    ::method objectName
+        expose runtime
+
+        type = unbox(runtime~type(self)~__name__)
+        id = unbox(runtime~id(self))
+
+        return type || '@' || id
+
     ::method unknown
         expose runtime identity
         use arg name, args
