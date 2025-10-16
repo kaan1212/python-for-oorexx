@@ -42,7 +42,7 @@ return testResult
 
         actual = string[start, stop]
 
-        self~assertSame('hello', actual)
+        self~assertSame('hello', unbox(actual))
 
     ::method test_list
         expose py
@@ -52,7 +52,7 @@ return testResult
 
         actual = list[start, stop]
 
-        self~assertSame("['h', 'e', 'l', 'l', 'o']", actual)
+        self~assertSame("['h', 'e', 'l', 'l', 'o']", actual~py.fromPythonString)
 
     ::method test_omitStartIndex
         expose py
@@ -61,7 +61,7 @@ return testResult
 
         actual = string[, stop]
 
-        self~assertSame('hello', actual)
+        self~assertSame('hello', unbox(actual))
 
     ::method test_omitStopIndex
         expose py
@@ -70,7 +70,7 @@ return testResult
 
         actual = string[start, py~None]
 
-        self~assertSame('world', actual)
+        self~assertSame('world', unbox(actual))
 
     ::method test_omitStartAndStopIndices
         expose py
@@ -78,7 +78,7 @@ return testResult
 
         actual = string[, py~None]
 
-        self~assertSame('hello, world', actual)
+        self~assertSame('hello, world', unbox(actual))
 
     ::method test_step
         expose py
@@ -87,4 +87,4 @@ return testResult
 
         actual = string[, , step]
 
-        self~assertSame('hlo ol', actual)
+        self~assertSame('hlo ol', unbox(actual))

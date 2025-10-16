@@ -32,7 +32,7 @@ return testResult
         py~from('os')~import('remove')
         py~from('os.path')~import('isfile')
 
-        if py~isfile(database) then
+        if unbox(py~isfile(database)) then
             py~remove(database)
 
     ::method test
@@ -51,4 +51,4 @@ return testResult
 
         con~close()
 
-        self~assertSame('[(8.2,), (7.5,)]', actual)
+        self~assertSame('[(8.2,), (7.5,)]', actual~py.fromPythonString)

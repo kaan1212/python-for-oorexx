@@ -48,7 +48,7 @@ return testResult
         f = py~open('test-output/test_arguments.txt')
         actual = f~read
         f~close
-        self~assertSame('hello, world', actual)
+        self~assertSame('hello, world', unbox(actual))
 
     ::method test_open_withDict
         expose py
@@ -74,4 +74,4 @@ return testResult
         f = py~open('test-output/test_arguments.txt')
         actual = f~read
         f~close
-        self~assertSame('hello, world', actual)
+        self~assertSame('hello, world', unbox(actual))

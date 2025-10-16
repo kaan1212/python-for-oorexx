@@ -28,19 +28,19 @@ return testResult
         expose py
         list = py[]
         actual = py~len(list)
-        self~assertSame(0, actual)
+        self~assertSame(0, unbox(actual))
 
     ::method test_newEmptyList_usingConstructor
         expose py
         list = py~list
         actual = py~len(list)
-        self~assertSame(0, actual)
+        self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyList_usingBrackets
         expose py
         list = py['a', 'b', 'c']
         actual = py~len(list)
-        self~assertSame(3, actual)
+        self~assertSame(3, unbox(actual))
 
     ::method test_newNonEmptyList_usingConstructor
         expose py
@@ -50,7 +50,7 @@ return testResult
 
         actual = py~len(list)
 
-        self~assertSame(3, actual)
+        self~assertSame(3, unbox(actual))
 
     ::method test_indexing_get
         expose py
@@ -59,7 +59,7 @@ return testResult
 
         actual = list[index]
 
-        self~assertSame('b', actual)
+        self~assertSame('b', unbox(actual))
 
     ::method test_indexing_set
         expose py
@@ -68,7 +68,7 @@ return testResult
 
         list[index] = 'bravo'
 
-        self~assertSame('bravo', list[index])
+        self~assertSame('bravo', unbox(list[index]))
 
     ::method test_append
         expose py
@@ -79,7 +79,7 @@ return testResult
 
         actual = py~len(list)
 
-        self~assertSame(3, actual)
+        self~assertSame(3, unbox(actual))
 
     ::method test_append_differentTypes
         expose py
@@ -94,7 +94,7 @@ return testResult
 
         actual = py~len(list)
 
-        self~assertSame(7, actual)
+        self~assertSame(7, unbox(actual))
 
     ::method test_iteration
         expose py
@@ -104,7 +104,7 @@ return testResult
 
         do i=0 to 2
             index = py~int(i)
-            concat ||= list[index]
+            concat ||= unbox(list[index])
         end
 
         self~assertSame('abc', concat)

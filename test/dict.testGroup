@@ -28,7 +28,7 @@ return testResult
         expose py
         dict = py~dict
         actual = py~len(dict)
-        self~assertSame(0, actual)
+        self~assertSame(0, unbox(actual))
 
     ::method test_set
         expose py
@@ -39,7 +39,7 @@ return testResult
 
         actual = py~len(dict)
 
-        self~assertSame(3, actual)
+        self~assertSame(3, unbox(actual))
 
     ::method test_get
         expose py
@@ -50,7 +50,7 @@ return testResult
 
         actual = dict['two']
 
-        self~assertSame(2, actual)
+        self~assertSame(2, unbox(actual))
 
     ::method test_del
         expose py
@@ -61,7 +61,7 @@ return testResult
 
         py~operator.delitem(dict, 'two')
 
-        self~assertFalse(py~operator.contains(dict, 'two'))
+        self~assertFalse(unbox(py~operator.contains(dict, 'two')))
 
     ::method test_contains
         expose py
@@ -70,4 +70,4 @@ return testResult
         dict['two'] = py~int(2)
         dict['three'] = py~int(3)
 
-        self~assertTrue(py~operator.contains(dict, 'two'))
+        self~assertTrue(unbox(py~operator.contains(dict, 'two')))

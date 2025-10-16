@@ -2,6 +2,19 @@
 ::requires 'orxpython' library
 
 
+::routine unbox public
+    use arg pythonObject
+
+    type = .Python~new~type(pythonObject)~__name__~py.fromPythonString
+
+    select case type
+        when 'NoneType' then return .nil
+        when 'bool' then return pythonObject~py.fromPythonString == 'True'
+        when 'int', 'float', 'str' then return pythonObject~py.fromPythonString
+        otherwise return pythonObject
+    end
+
+
 ::class 'Python' public
     ::attribute False get
     ::attribute True get
@@ -64,17 +77,6 @@
 
         return self~getPythonProxyObject(identity)
 
-    ::method makeString
-        expose False True None
-        use arg pythonInstance
-
-        select case pythonInstance~identity
-            when False~identity then return .false
-            when True~identity then return .true
-            when None~identity then return .nil
-            otherwise return PyRexx_CallFunction('invoke_str', pythonInstance~identity)
-        end
-
     ::method getPythonProxyObject private
         expose pythonObjectRegistry
         use arg identity
@@ -133,8 +135,14 @@
         rexxMethodNames = rexxObject~instanceMethods(rexxClass)~allIndexes
         pythonMethodNames = self~callFunction('get_corresponding_python_methodnames', pythonBaseClassName, rexxMethodNames)
 
+        pythonMethodNamesUnboxed = .Array~new
+
+        do pythonMethodName over pythonMethodNames
+            pythonMethodNamesUnboxed~append(unbox(pythonMethodName))
+        end
+
         rexxClassName = rexxClass~id
-        call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNames, self
+        call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNamesUnboxed, self
 
 
 ::class 'PythonObject'
@@ -150,15 +158,15 @@
         use arg name, args
         return runtime~callMethod(identity, name, args)
 
-    ::method makeString
-        expose runtime
-        return runtime~makeString(self)
+    ::method py.fromPythonString
+        expose identity
+        return PyRexx_CallFunction('invoke_str', identity)
 
     ::method makeArray
         expose runtime
 
         -- Materialize len for performance.
-        len = runtime~callFunction('len', self)~makeString
+        len = unbox(runtime~callFunction('len', self))
         array = .Array~new(len)
 
         do i=0 to len-1

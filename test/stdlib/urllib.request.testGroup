@@ -35,7 +35,7 @@ return testResult
         f = py~urllib.request.urlopen('https://www.oorexx.org/')
         html = f~read(py~100)~decode('utf-8')
 
-        self~assertTrue(html~startswith('<!DOCTYPE html'))
+        self~assertTrue(unbox(html~startswith('<!DOCTYPE html')))
 
     ::method test_Request
         expose py
@@ -45,4 +45,4 @@ return testResult
         f = py~urllib.request.urlopen(req)
         html = f~read(py~100)~decode('utf-8')
 
-        self~assertTrue(html~startswith('<!DOCTYPE html'))
+        self~assertTrue(unbox(html~startswith('<!DOCTYPE html')))

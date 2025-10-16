@@ -39,8 +39,8 @@ return testResult
         identity1 = py~id(bool1)
         identity2 = py~id(bool2)
 
-        self~assertEquals(identity1~makestring, identity2)
-        self~assertSame(identity1~makestring, identity2)
+        self~assertEquals(unbox(identity1), unbox(identity2))
+        self~assertSame(unbox(identity1), unbox(identity2))
 
     ::method test_hasExactlyOneConstantFalseInstance
         expose py
@@ -50,60 +50,60 @@ return testResult
         identity1 = py~id(bool1)
         identity2 = py~id(bool2)
 
-        self~assertEquals(identity1~makestring, identity2)
-        self~assertSame(identity1~makestring, identity2)
+        self~assertEquals(unbox(identity1), unbox(identity2))
+        self~assertSame(unbox(identity1), unbox(identity2))
 
     ::method test_rexxPythonTrueCompatibility
         expose py
-        self~assertTrue(py~True)
+        self~assertTrue(unbox(py~True))
 
-        self~assertTrue(.true = py~True)
-        self~assertTrue(.true == py~True)
+        self~assertTrue(.true = unbox(py~True))
+        self~assertTrue(.true == unbox(py~True))
 
-        self~assertFalse(.false = py~True)
-        self~assertFalse(.false == py~True)
+        self~assertFalse(.false = unbox(py~True))
+        self~assertFalse(.false == unbox(py~True))
 
-        self~assertTrue(py~True = .true)
+        self~assertTrue(unbox(py~True) = .true)
 
     ::method test_rexxPythonFalseCompatibility
         expose py
-        self~assertFalse(py~False)
+        self~assertFalse(unbox(py~False))
 
-        self~assertFalse(.true = py~False)
-        self~assertFalse(.true == py~False)
+        self~assertFalse(.true = unbox(py~False))
+        self~assertFalse(.true == unbox(py~False))
 
-        self~assertTrue(.false = py~False)
-        self~assertTrue(.false == py~False)
+        self~assertTrue(.false = unbox(py~False))
+        self~assertTrue(.false == unbox(py~False))
 
     ::method test_objectsConsideredTrue
         expose py
-        self~assertTrue(py~bool(py~True))
-        self~assertTrue(py~bool(py~int(1)))
-        self~assertTrue(py~bool(py~float(1.0)))
-        self~assertTrue(py~bool(py~complex('1j')))
+        self~assertTrue(unbox(py~bool(py~True)))
+        self~assertTrue(unbox(py~bool(py~int(1))))
+        self~assertTrue(unbox(py~bool(py~float(1.0))))
+        self~assertTrue(unbox(py~bool(py~complex('1j'))))
         -- todo: Decimal(0)
         -- todo: Fraction(0, 1)
-        self~assertTrue(py~bool('a'))
-        self~assertTrue(py~bool(py~tuple(py~range(py~int(1)))))
-        self~assertTrue(py~bool(py~list~~append('a')))
+        self~assertTrue(unbox(py~bool('a')))
+        self~assertTrue(unbox(py~bool(py~tuple(py~range(py~int(1))))))
+        self~assertTrue(unbox(py~bool(py~list~~append('a'))))
         dict = py~dict
         dict['key'] = 'value'
-        self~assertTrue(py~bool(dict))
-        self~assertTrue(py~bool(py~set~~add('a')))
-        self~assertTrue(py~bool(py~range(py~int(1))))
+        self~assertTrue(unbox(py~bool(dict)))
+        self~assertTrue(unbox(py~bool(py~set~~add('a'))))
+        self~assertTrue(unbox(py~bool(py~range(py~int(1)))))
 
     ::method test_objectsConsideredFalse
         expose py
         -- todo: None
-        self~assertFalse(py~bool(py~False))
-        self~assertFalse(py~bool(py~int(0)))
-        self~assertFalse(py~bool(py~float(0.0)))
-        self~assertFalse(py~bool(py~complex('0j')))
+        self~assertFalse(unbox(py~bool(py~False)))
+        self~assertFalse(unbox(py~bool(py~int(0))))
+        self~assertFalse(unbox(py~bool(py~float(0.0))))
+        self~assertFalse(unbox(py~bool(py~complex('0j'))))
         -- todo: Decimal(0)
         -- todo: Fraction(0, 1)
-        self~assertFalse(py~bool(''))
-        self~assertFalse(py~bool(py~tuple))
-        self~assertFalse(py~bool(py~list))
-        self~assertFalse(py~bool(py~dict))
-        self~assertFalse(py~bool(py~set))
-        self~assertFalse(py~bool(py~range(py~int(0))))
+        self~assertFalse(unbox(py~bool('')))
+        self~assertFalse(unbox(py~bool(py~tuple)))
+        self~assertFalse(unbox(py~bool(py~list)))
+        self~assertFalse(unbox(py~bool(py~dict)))
+        self~assertFalse(unbox(py~bool(py~set)))
+        self~assertFalse(unbox(py~bool(py~range(py~int(0)))))

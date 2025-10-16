@@ -35,7 +35,7 @@ return testResult
         py~seed(py~0)
         actual = py~random()
 
-        self~assertSame(0.8444218515250481, actual)
+        self~assertSame(0.8444218515250481, unbox(actual))
 
     ::method test_randrange
         expose py
@@ -44,7 +44,7 @@ return testResult
         py~seed(py~0)
         actual = py~randrange(py~10)
 
-        self~assertSame(6, actual)
+        self~assertSame(6, unbox(actual))
 
     ::method test_choice
         expose py
@@ -53,7 +53,7 @@ return testResult
         py~seed(py~0)
         actual = py~choice(py['win', 'lose', 'draw'])
 
-        self~assertSame('lose', actual)
+        self~assertSame('lose', unbox(actual))
 
     ::method test_shuffle
         expose py
@@ -63,4 +63,4 @@ return testResult
         deck = py~str('ace two three four')~split()
         py~shuffle(deck)
 
-        self~assertSame("['three', 'ace', 'two', 'four']", deck)
+        self~assertSame("['three', 'ace', 'two', 'four']", deck~py.fromPythonString)

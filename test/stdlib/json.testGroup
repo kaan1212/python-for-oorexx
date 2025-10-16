@@ -39,7 +39,7 @@ return testResult
         obj = py['foo', objChild]
         actual = py~json.dumps(obj)
 
-        self~assertSame('["foo", {"bar": ["baz", null, 1.0, 2]}]', actual)
+        self~assertSame('["foo", {"bar": ["baz", null, 1.0, 2]}]', actual~py.fromPythonString)
 
     ::method test_dumps_sortKeys
         /*
@@ -62,7 +62,7 @@ return testResult
         kwargs['sort_keys'] = py~True
         actual = py~json.dumps(dict, kwargs)
 
-        self~assertSame('{"a": 0, "b": 0, "c": 0}', actual)
+        self~assertSame('{"a": 0, "b": 0, "c": 0}', actual~py.fromPythonString)
 
     ::method test_dumps_compactEncoding
         /*
@@ -85,7 +85,7 @@ return testResult
         kwargs['separators'] = py~tuple(py[',', ':'])
         actual = py~json.dumps(obj, kwargs)
 
-        self~assertSame('[1,2,3,{"4":5,"6":7}]', actual)
+        self~assertSame('[1,2,3,{"4":5,"6":7}]', actual~py.fromPythonString)
 
     ::method test_dumps_prettyPrinting
         /*
@@ -118,7 +118,7 @@ return testResult
             '    "6": 7'nl || -
             '}'
 
-        self~assertSame(expected, actual)
+        self~assertSame(expected, actual~py.fromPythonString)
 
     ::method test_loads
         /*
@@ -137,4 +137,4 @@ return testResult
         expectedObjChild['bar'] = py['baz', py~None, py~float(1.0), py~int(2)]
         expectedObj = py['foo', expectedObjChild]
 
-        self~assertSame(expectedObj~makeString, actual~makeString)
+        self~assertSame(expectedObj~py.fromPythonString, actual~py.fromPythonString)

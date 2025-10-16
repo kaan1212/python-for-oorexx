@@ -40,12 +40,12 @@ return testResult
         t = py~datetime.time(py~12, py~30)
         dt = py~datetime.datetime.combine(d, t)
 
-        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', py~repr(dt))
-        self~assertSame(2005, dt~year)
-        self~assertSame(7, dt~month)
-        self~assertSame(14, dt~day)
-        self~assertSame(12, dt~hour)
-        self~assertSame(30, dt~minute)
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(py~repr(dt)))
+        self~assertSame(2005, unbox(dt~year))
+        self~assertSame(7, unbox(dt~month))
+        self~assertSame(14, unbox(dt~day))
+        self~assertSame(12, unbox(dt~hour))
+        self~assertSame(30, unbox(dt~minute))
 
     ::method test_datetime_combine_fromImport
         /*
@@ -63,12 +63,12 @@ return testResult
         t = py~time(py~12, py~30)
         dt = py~datetime.combine(d, t)
 
-        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', py~repr(dt))
-        self~assertSame(2005, dt~year)
-        self~assertSame(7, dt~month)
-        self~assertSame(14, dt~day)
-        self~assertSame(12, dt~hour)
-        self~assertSame(30, dt~minute)
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(py~repr(dt)))
+        self~assertSame(2005, unbox(dt~year))
+        self~assertSame(7, unbox(dt~month))
+        self~assertSame(14, unbox(dt~day))
+        self~assertSame(12, unbox(dt~hour))
+        self~assertSame(30, unbox(dt~minute))
 
     ::method test_date_usingConstructor
         /*
@@ -82,10 +82,10 @@ return testResult
         py~from('datetime')~import('date')
         date = py~date(py~1991, py~2, py~20)
 
-        self~assertSame('datetime.date(1991, 2, 20)', py~repr(date))
-        self~assertSame(1991, date~year)
-        self~assertSame(2, date~month)
-        self~assertSame(20, date~day)
+        self~assertSame('datetime.date(1991, 2, 20)', unbox(py~repr(date)))
+        self~assertSame(1991, unbox(date~year))
+        self~assertSame(2, unbox(date~month))
+        self~assertSame(20, unbox(date~day))
 
     ::method test_datetime_usingClassMethod
         /*
@@ -99,13 +99,13 @@ return testResult
         py~from('datetime')~import('datetime')
         datetime = py~datetime.fromisoformat('2011-11-04T00:05:23')
 
-        self~assertSame('datetime.datetime(2011, 11, 4, 0, 5, 23)', py~repr(datetime))
-        self~assertSame(2011, datetime~year)
-        self~assertSame(11, datetime~month)
-        self~assertSame(4, datetime~day)
-        self~assertSame(0, datetime~hour)
-        self~assertSame(5, datetime~minute)
-        self~assertSame(23, datetime~second)
+        self~assertSame('datetime.datetime(2011, 11, 4, 0, 5, 23)', unbox(py~repr(datetime)))
+        self~assertSame(2011, unbox(datetime~year))
+        self~assertSame(11, unbox(datetime~month))
+        self~assertSame(4, unbox(datetime~day))
+        self~assertSame(0, unbox(datetime~hour))
+        self~assertSame(5, unbox(datetime~minute))
+        self~assertSame(23, unbox(datetime~second))
 
     ::method test_time_usingClassMethod
         /*
@@ -119,10 +119,10 @@ return testResult
         py~from('datetime')~import('time')
         time = py~time.fromisoformat('04:23:01')
 
-        self~assertSame('datetime.time(4, 23, 1)', py~repr(time))
-        self~assertSame(4, time~hour)
-        self~assertSame(23, time~minute)
-        self~assertSame(1, time~second)
+        self~assertSame('datetime.time(4, 23, 1)', unbox(py~repr(time)))
+        self~assertSame(4, unbox(time~hour))
+        self~assertSame(23, unbox(time~minute))
+        self~assertSame(1, unbox(time~second))
 
     ::method test_timedelta_usingConstructor
         /*
@@ -139,6 +139,6 @@ return testResult
         py~from('datetime')~import('timedelta')
         duration = py~timedelta(py~kwd('seconds', py~11235813))
 
-        self~assertSame(130, duration~days)
-        self~assertSame(3813, duration~seconds)
-        self~assertSame(11235813.0, duration~total_seconds())
+        self~assertSame(130, unbox(duration~days))
+        self~assertSame(3813, unbox(duration~seconds))
+        self~assertSame(11235813.0, unbox(duration~total_seconds()))

@@ -63,7 +63,7 @@ return testResult
         row = py~next(reader)
         f~close
 
-        self~assertSame("['a', 'b', 'c']", row)
+        self~assertSame("['a', 'b', 'c']", row~py.fromPythonString)
 
     ::method test_reader_str
         /*
@@ -83,4 +83,4 @@ return testResult
         csvreader = py~csv.reader(py['one,two,three'])
         row = py~next(csvreader)
 
-        self~assertSame("['one', 'two', 'three']", row)
+        self~assertSame("['one', 'two', 'three']", row~py.fromPythonString)

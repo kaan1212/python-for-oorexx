@@ -25,30 +25,30 @@ return testResult
     ::method test_noArgument
         expose py
         actual = py~float
-        self~assertSame(0.0, actual)
+        self~assertSame(0.0, unbox(actual))
 
     ::method test_simple
         expose py
         actual = py~float('+1.23')
-        self~assertSame(1.23, actual)
+        self~assertSame(1.23, unbox(actual))
 
     ::method test_whitespaces
         expose py
         string = py~escape('   -12345\n')
         actual = py~float(string)
-        self~assertSame(-12345.0, actual)
+        self~assertSame(-12345.0, unbox(actual))
 
     ::method test_exponent_lowercase
         expose py
         actual = py~float('1e-003')
-        self~assertSame(0.001, actual)
+        self~assertSame(0.001, unbox(actual))
 
     ::method test_exponent_uppercase
         expose py
         actual = py~float('+1E6')
-        self~assertSame(1000000.0, actual)
+        self~assertSame(1000000.0, unbox(actual))
 
     ::method test_infinity
         expose py
         actual = py~float('-Infinity')
-        self~assertSame('-inf', actual)
+        self~assertSame('-inf', unbox(actual))

@@ -27,15 +27,15 @@ return testResult
 ::class MyHTMLParser_say
     ::method handle_starttag
         use arg pself, tag, attrs
-        say 'Encountered a start tag:' tag
+        say 'Encountered a start tag:' unbox(tag)
 
     ::method handle_endtag
         use arg pself, tag
-        say 'Encountered an end tag :' tag
+        say 'Encountered an end tag :' unbox(tag)
 
     ::method handle_data
         use arg pself, data
-        say 'Encountered some data  :' data
+        say 'Encountered some data  :' unbox(data)
 
 
 ::class MyHTMLParser_queue
@@ -46,17 +46,17 @@ return testResult
     ::method handle_starttag
         expose queue
         use arg pself, tag, attrs
-        queue~append('Encountered a start tag:' tag)
+        queue~append('Encountered a start tag:' unbox(tag))
 
     ::method handle_endtag
         expose queue
         use arg pself, tag
-        queue~append('Encountered an end tag :' tag)
+        queue~append('Encountered an end tag :' unbox(tag))
 
     ::method handle_data
         expose queue
         use arg pself, data
-        queue~append('Encountered some data  :' data)
+        queue~append('Encountered some data  :' unbox(data))
 
 
 ::class MyHTMLParser_print
@@ -67,17 +67,17 @@ return testResult
     ::method handle_starttag
         expose py file
         use arg pself, tag, attrs
-        py~print('Encountered a start tag:' tag, py~kwd('file', file))
+        py~print('Encountered a start tag:' unbox(tag), py~kwd('file', file))
 
     ::method handle_endtag
         expose py file
         use arg pself, tag, attrs
-        py~print('Encountered an end tag :' tag, py~kwd('file', file))
+        py~print('Encountered an end tag :' unbox(tag), py~kwd('file', file))
 
     ::method handle_data
         expose py file
         use arg pself, data
-        py~print('Encountered some data  :' data, py~kwd('file', file))
+        py~print('Encountered some data  :' unbox(data), py~kwd('file', file))
 
 
 ::class MyHTMLParser_pself
@@ -88,17 +88,17 @@ return testResult
     ::method handle_starttag
         expose queue
         use arg pself, tag, attrs
-        queue~append('Encountered a start tag:' tag pself~getpos())
+        queue~append('Encountered a start tag:' unbox(tag) pself~getpos()~py.fromPythonString)
 
     ::method handle_endtag
         expose queue
         use arg pself, tag
-        queue~append('Encountered an end tag :' tag pself~getpos())
+        queue~append('Encountered an end tag :' unbox(tag) pself~getpos()~py.fromPythonString)
 
     ::method handle_data
         expose queue
         use arg pself, data
-        queue~append('Encountered some data  :' data pself~getpos())
+        queue~append('Encountered some data  :' unbox(data) pself~getpos()~py.fromPythonString)
 
 
 ::class MyHTMLParserExtended
@@ -108,44 +108,44 @@ return testResult
 
     ::method handle_starttag
         use arg pself, tag, attrs
-        say 'Start tag:' tag
+        say 'Start tag:' unbox(tag)
 
         do attr over attrs
-            say '     attr:' attr
+            say '     attr:' attr~py.fromPythonString
         end
 
     ::method handle_endtag
         use arg pself, tag
-        say 'End tag  :' tag
+        say 'End tag  :' unbox(tag)
 
     ::method handle_data
         use arg pself, data
-        say 'Data     :' data
+        say 'Data     :' unbox(data)
 
     ::method handle_comment
         use arg pself, data
-        say 'Comment  :' data
+        say 'Comment  :' unbox(data)
 
     ::method handle_entityref
         expose py
         use arg pself, name
         c = py~chr(py~name2codepoint[name])
-        say 'Named ent:' c
+        say 'Named ent:' unbox(c)
 
     ::method handle_charref
         expose py
         use arg pself, name
 
-        if name~startswith('x') then
+        if unbox(name~startswith('x')) then
             c = py~chr(py~int(name[py~1, py~None], py~16))
         else
             c = py~chr(py~int(name))
 
-        say 'Num ent  :' c
+        say 'Num ent  :' unbox(c)
 
     ::method handle_decl
         use arg pself, data
-        say 'Decl     :' data
+        say 'Decl     :' unbox(data)
 
 
 ::class html.parser.testGroup public subclass ooTestCase
@@ -155,7 +155,6 @@ return testResult
 
     ::method startRexxOutputRecording
         expose defaultOutput output
-
         defaultOutput = .local~output
         output = .RexxQueue~new()
         .local~output = output
@@ -166,6 +165,7 @@ return testResult
 
     ::method test_MyHTMLParser_say
         expose py output
+
         py~from('html.parser')~import('HTMLParser')
 
         py~defineClass(.MyHTMLParser_say, 'HTMLParser')
@@ -225,18 +225,18 @@ return testResult
         lines = file~getvalue()~splitlines()
         lines~reverse()
 
-        self~assertSame('Encountered a start tag: html', lines~pop())
-        self~assertSame('Encountered a start tag: head', lines~pop())
-        self~assertSame('Encountered a start tag: title', lines~pop())
-        self~assertSame('Encountered some data  : Test', lines~pop())
-        self~assertSame('Encountered an end tag : title', lines~pop())
-        self~assertSame('Encountered an end tag : head', lines~pop())
-        self~assertSame('Encountered a start tag: body', lines~pop())
-        self~assertSame('Encountered a start tag: h1', lines~pop())
-        self~assertSame('Encountered some data  : Parse me!', lines~pop())
-        self~assertSame('Encountered an end tag : h1', lines~pop())
-        self~assertSame('Encountered an end tag : body', lines~pop())
-        self~assertSame('Encountered an end tag : html', lines~pop())
+        self~assertSame('Encountered a start tag: html', unbox(lines~pop()))
+        self~assertSame('Encountered a start tag: head', unbox(lines~pop()))
+        self~assertSame('Encountered a start tag: title', unbox(lines~pop()))
+        self~assertSame('Encountered some data  : Test', unbox(lines~pop()))
+        self~assertSame('Encountered an end tag : title', unbox(lines~pop()))
+        self~assertSame('Encountered an end tag : head', unbox(lines~pop()))
+        self~assertSame('Encountered a start tag: body', unbox(lines~pop()))
+        self~assertSame('Encountered a start tag: h1', unbox(lines~pop()))
+        self~assertSame('Encountered some data  : Parse me!', unbox(lines~pop()))
+        self~assertSame('Encountered an end tag : h1', unbox(lines~pop()))
+        self~assertSame('Encountered an end tag : body', unbox(lines~pop()))
+        self~assertSame('Encountered an end tag : html', unbox(lines~pop()))
 
     ::method test_MyHTMLParser_pself
         expose py

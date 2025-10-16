@@ -28,25 +28,25 @@ return testResult
         expose py
         string = ''
         actual = py~len(string)
-        self~assertSame(0, actual)
+        self~assertSame(0, unbox(actual))
 
     ::method test_newEmptyString_usingConstructor
         expose py
         string = py~str
         actual = py~len(string)
-        self~assertSame(0, actual)
+        self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyString_usingLiteral
         expose py
         string = 'hello, world'
         actual = py~len(string)
-        self~assertSame(12, actual)
+        self~assertSame(12, unbox(actual))
 
     ::method test_newNonEmptyString_usingConstructor
         expose py
         string = py~str('hello, world')
         actual = py~len(string)
-        self~assertSame(12, actual)
+        self~assertSame(12, unbox(actual))
 
     ::method test_indexing
         expose py
@@ -55,19 +55,19 @@ return testResult
 
         actual = string[index]
 
-        self~assertSame('h', actual)
+        self~assertSame('h', unbox(actual))
 
     ::method test_trueString_isNotRexxTrue
         expose py
         actual = py~str('True')
-        self~assertNotSame(.true, actual)
+        self~assertNotSame(.true, unbox(actual))
 
     ::method test_falseString_isNotRexxFalse
         expose py
         actual = py~str('False')
-        self~assertNotSame(.false, actual)
+        self~assertNotSame(.false, unbox(actual))
 
     ::method test_noneString_isNotRexxNil
         expose py
         actual = py~str('None')
-        self~assertNotNil(actual)
+        self~assertNotNil(unbox(actual))
