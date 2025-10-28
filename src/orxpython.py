@@ -53,7 +53,7 @@ def debug(*args):
 
 
 # Public.
-def get_builtin_constant_identity(name):
+def get_builtin_constant_id(name):
     constant = get_builtin_constant(name)
     identity = id(constant)
 

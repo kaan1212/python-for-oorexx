@@ -56,11 +56,11 @@ PyObject* rexxToPythonObject(RexxCallContext* context, RexxObjectPtr obj, int in
 		return pArgs;
 	}
 	else if (context->IsInstanceOf(obj, pythonInstanceClass)) {
-		RexxObjectPtr identity = context->SendMessage0(obj, "identity");
+		RexxObjectPtr id = context->SendMessage0(obj, "id");
 		uintptr_t ptr;
-		context->ObjectToUintptr(identity, &ptr);
+		context->ObjectToUintptr(id, &ptr);
 
-		if (debug) printf("%*sPythonInstance: %s\n", indent, "", context->ObjectToStringValue(identity));
+		if (debug) printf("%*sPythonInstance: %s\n", indent, "", context->ObjectToStringValue(id));
 
 		return (PyObject*)ptr;
 	}
@@ -126,11 +126,11 @@ PyObject* handle_callback(PyObject* self, PyObject* args) {
 	for (Py_ssize_t i = 0; i < size; i++) {
 		PyObject* item = PyTuple_GetItem(args, i);
 
-		// Store Python object and wrap its identity in a Rexx PythonInstance object.
-		PyObject* pIdentity = PyObject_CallOneArg(store_object, item);
-		const char* cIdentity = PyUnicode_AsUTF8(pIdentity);
-		RexxStringObject rIdentity = _threadContext->NewStringFromAsciiz(cIdentity);
-		RexxObjectPtr pythonInstance = _threadContext->SendMessage1(pythonInstanceClass, "new", rIdentity);
+		// Store Python object and wrap its id in a Rexx PythonInstance object.
+		PyObject* pId = PyObject_CallOneArg(store_object, item);
+		const char* cId = PyUnicode_AsUTF8(pId);
+		RexxStringObject rId = _threadContext->NewStringFromAsciiz(cId);
+		RexxObjectPtr pythonInstance = _threadContext->SendMessage1(pythonInstanceClass, "new", rId);
 
 		_threadContext->ArrayAppend(rexxArray, pythonInstance);
 	}

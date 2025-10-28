@@ -29,9 +29,9 @@
         debug = .false
         call PyRexx_Initialize 'orxpython', debug
 
-        False = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'False'))
-        True = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'True'))
-        None = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_identity', 'None'))
+        False = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_id', 'False'))
+        True = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_id', 'True'))
+        None = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_id', 'None'))
         /* Alternative:
         False = self~callFunction('get_builtin_constant', 'False')
         True = self~callFunction('get_builtin_constant', 'True')
@@ -67,28 +67,28 @@
         if \ args~isA(.Array) then
             args = arg(2, 'Array')
 
-        identity = PyRexx_CallFunction('invoke_function', .Array~of(name, args))
+        id = PyRexx_CallFunction('invoke_function', .Array~of(name, args))
 
-        return self~getPythonProxyObject(identity)
+        return self~getPythonProxyObject(id)
 
     ::method callMethod class
-        use arg identity, name, args
+        use arg id, name, args
 
         if \ args~isA(.Array) then
             args = arg(3, 'Array')
 
-        identity = PyRexx_CallFunction('invoke_method', .Array~of(identity, name, args))
+        id = PyRexx_CallFunction('invoke_method', .Array~of(id, name, args))
 
-        return self~getPythonProxyObject(identity)
+        return self~getPythonProxyObject(id)
 
     ::method getPythonProxyObject class private
         expose pythonObjectRegistry
-        use arg identity
+        use arg id
 
-        if \ pythonObjectRegistry~hasIndex(identity) then
-            pythonObjectRegistry[identity] = .PythonObject~new(identity)
+        if \ pythonObjectRegistry~hasIndex(id) then
+            pythonObjectRegistry[id] = .PythonObject~new(id)
 
-        return pythonObjectRegistry[identity]
+        return pythonObjectRegistry[id]
 
     ::method kwd class
         use arg keyword, value
@@ -150,11 +150,11 @@
 
 
 ::class 'PythonObject'
-    ::attribute identity get
+    ::attribute id get
 
     ::method init
-        expose identity
-        use arg identity
+        expose id
+        use arg id
 
     ::method objectName
         type = unbox(.Python~type(self)~__name__)
@@ -163,13 +163,13 @@
         return type || '@' || id
 
     ::method unknown
-        expose identity
+        expose id
         use arg name, args
-        return .Python~callMethod(identity, name, args)
+        return .Python~callMethod(id, name, args)
 
     ::method py.fromPythonString
-        expose identity
-        return PyRexx_CallFunction('invoke_str', identity)
+        expose id
+        return PyRexx_CallFunction('invoke_str', id)
 
     ::method makeArray
         -- Materialize len for performance.

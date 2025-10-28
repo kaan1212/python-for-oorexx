@@ -31,21 +31,21 @@ return testResult
         bool1 = .Python~True
         bool2 = .Python~bool(.Python~int(1))
 
-        identity1 = .Python~id(bool1)
-        identity2 = .Python~id(bool2)
+        id1 = .Python~id(bool1)
+        id2 = .Python~id(bool2)
 
-        self~assertEquals(unbox(identity1), unbox(identity2))
-        self~assertSame(unbox(identity1), unbox(identity2))
+        self~assertEquals(unbox(id1), unbox(id2))
+        self~assertSame(unbox(id1), unbox(id2))
 
     ::method test_hasExactlyOneConstantFalseInstance
         bool1 = .Python~False
         bool2 = .Python~bool(.Python~int(0))
 
-        identity1 = .Python~id(bool1)
-        identity2 = .Python~id(bool2)
+        id1 = .Python~id(bool1)
+        id2 = .Python~id(bool2)
 
-        self~assertEquals(unbox(identity1), unbox(identity2))
-        self~assertSame(unbox(identity1), unbox(identity2))
+        self~assertEquals(unbox(id1), unbox(id2))
+        self~assertSame(unbox(id1), unbox(id2))
 
     ::method test_rexxPythonTrueCompatibility
         self~assertTrue(unbox(.Python~True))
