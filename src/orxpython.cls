@@ -106,7 +106,7 @@
 
         return dict
 
-    ::method '[]' class
+    ::method py.listOf class
         list = self~callFunction('list')
 
         do i=1 to arg()

@@ -26,12 +26,12 @@ return testResult
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyTuple_fromIterable
-        tuple = .Python~tuple(.Python['a', 'b', 'c'])
+        tuple = .Python~tuple(.Python~py.listOf('a', 'b', 'c'))
         actual = .Python~len(tuple)
         self~assertSame(3, unbox(actual))
 
     ::method test_indexing_get
-        tuple = .Python~tuple(.Python['a', 'b', 'c'])
+        tuple = .Python~tuple(.Python~py.listOf('a', 'b', 'c'))
 
         index = .Python~int(1)
         actual = tuple[index]

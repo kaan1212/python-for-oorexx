@@ -28,13 +28,13 @@ return testResult
 
     -- Return True if all elements of the iterable are true (or if the iterable is empty).
     ::method test_all
-        iterable = .Python[.Python~True, .Python~True, .Python~True]
+        iterable = .Python~py.listOf(.Python~True, .Python~True, .Python~True)
         actual = .Python~all(iterable)
         self~assertTrue(unbox(actual))
 
     -- Return True if any element of the iterable is true.
     ::method test_any
-        iterable = .Python[.Python~True, .Python~False .Python~False]
+        iterable = .Python~py.listOf(.Python~True, .Python~False .Python~False)
         actual = .Python~any(iterable)
         self~assertTrue(unbox(actual))
 
@@ -111,7 +111,7 @@ return testResult
 
     -- Return an enumerate object. iterable must be a sequence, an iterator, or some other object which supports iteration.
     ::method test_enumerate
-        seasons = .Python['Spring', 'Summer', 'Fall', 'Winter']
+        seasons = .Python~py.listOf('Spring', 'Summer', 'Fall', 'Winter')
         actual = .Python~list(.Python~enumerate(seasons))
         self~assertSame("[(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]", actual~py.fromPythonString)
 
@@ -307,7 +307,7 @@ return testResult
 
     -- Return a reverse iterator.
     ::method test_reversed
-        seq = .Python['a', 'b', 'c']
+        seq = .Python~py.listOf('a', 'b', 'c')
 
         iterator = .Python~reversed(seq)
         actual = .Python~list(iterator)
@@ -367,8 +367,8 @@ return testResult
 
     -- Iterate over several iterables in parallel, producing tuples with an item from each one.
     ::method test_zip
-        iterable1 = .Python[.Python~int(1), .Python~int(2), .Python~int(3)]
-        iterable2 = .Python['sugar', 'spice', 'everything nice']
+        iterable1 = .Python~py.listOf(.Python~int(1), .Python~int(2), .Python~int(3))
+        iterable2 = .Python~py.listOf('sugar', 'spice', 'everything nice')
 
         iterator = .Python~zip(iterable1, iterable2)
         actual = .Python~list(iterator)

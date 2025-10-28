@@ -29,8 +29,8 @@ return testResult
         .Python~import('json')
 
         objChild = .Python~dict
-        objChild['bar'] = .Python~tuple(.Python['baz', .Python~None, .Python~float(1.0), .Python~int(2)])
-        obj = .Python['foo', objChild]
+        objChild['bar'] = .Python~tuple(.Python~py.listOf('baz', .Python~None, .Python~float(1.0), .Python~int(2)))
+        obj = .Python~py.listOf('foo', objChild)
         actual = .Python~json.dumps(obj)
 
         self~assertSame('["foo", {"bar": ["baz", null, 1.0, 2]}]', actual~py.fromPythonString)
@@ -69,10 +69,10 @@ return testResult
         dict = .Python~dict
         dict['4'] = .Python~int(5)
         dict['6'] = .Python~int(7)
-        obj = .Python[.Python~int(1), .Python~int(2), .Python~int(3), dict]
+        obj = .Python~py.listOf(.Python~int(1), .Python~int(2), .Python~int(3), dict)
 
         kwargs = .Python~kwargs
-        kwargs['separators'] = .Python~tuple(.Python[',', ':'])
+        kwargs['separators'] = .Python~tuple(.Python~py.listOf(',', ':'))
         actual = .Python~json.dumps(obj, kwargs)
 
         self~assertSame('[1,2,3,{"4":5,"6":7}]', actual~py.fromPythonString)
@@ -120,7 +120,7 @@ return testResult
         actual = .Python~json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
 
         expectedObjChild = .Python~dict
-        expectedObjChild['bar'] = .Python['baz', .Python~None, .Python~float(1.0), .Python~int(2)]
-        expectedObj = .Python['foo', expectedObjChild]
+        expectedObjChild['bar'] = .Python~py.listOf('baz', .Python~None, .Python~float(1.0), .Python~int(2))
+        expectedObj = .Python~py.listOf('foo', expectedObjChild)
 
         self~assertSame(expectedObj~py.fromPythonString, actual~py.fromPythonString)

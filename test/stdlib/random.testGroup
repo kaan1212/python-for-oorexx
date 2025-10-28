@@ -44,7 +44,7 @@ return testResult
         .Python~from('random')~import('choice', 'seed')
 
         .Python~seed(.Python~int(0))
-        actual = .Python~choice(.Python['win', 'lose', 'draw'])
+        actual = .Python~choice(.Python~py.listOf('win', 'lose', 'draw'))
 
         self~assertSame('lose', unbox(actual))
 

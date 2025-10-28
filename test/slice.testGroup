@@ -40,7 +40,7 @@ return testResult
         self~assertSame('hello', unbox(actual))
 
     ::method test_list
-        list = .Python['h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd']
+        list = .Python~py.listOf('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd')
         start = .Python~int(0)
         stop = .Python~int(5)
 

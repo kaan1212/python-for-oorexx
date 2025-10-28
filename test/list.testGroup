@@ -21,7 +21,7 @@ return testResult
 */
 ::class list.testGroup public subclass ooTestCase
     ::method test_newEmptyList_usingBrackets
-        list = .Python[]
+        list = .Python~list
         actual = .Python~len(list)
         self~assertSame(0, unbox(actual))
 
@@ -31,7 +31,7 @@ return testResult
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyList_usingBrackets
-        list = .Python['a', 'b', 'c']
+        list = .Python~py.listOf('a', 'b', 'c')
         actual = .Python~len(list)
         self~assertSame(3, unbox(actual))
 
@@ -45,7 +45,7 @@ return testResult
         self~assertSame(3, unbox(actual))
 
     ::method test_indexing_get
-        list = .Python['a', 'b', 'c']
+        list = .Python~py.listOf('a', 'b', 'c')
         index = .Python~int(1)
 
         actual = list[index]
@@ -53,7 +53,7 @@ return testResult
         self~assertSame('b', unbox(actual))
 
     ::method test_indexing_set
-        list = .Python['a', 'b', 'c']
+        list = .Python~py.listOf('a', 'b', 'c')
         index = .Python~int(1)
 
         list[index] = 'bravo'
@@ -61,7 +61,7 @@ return testResult
         self~assertSame('bravo', unbox(list[index]))
 
     ::method test_append
-        list = .Python[]
+        list = .Python~list
         list~append('a')
         list~append('b')
         list~append('c')
@@ -71,21 +71,21 @@ return testResult
         self~assertSame(3, unbox(actual))
 
     ::method test_append_differentTypes
-        list = .Python[]
+        list = .Python~list
         list~append('a')
         list~append(.Python~str('a'))
         list~append(.Python~int(1))
         list~append(.Python~float(1.0))
         list~append(.Python~True)
         list~append(.Python~None)
-        list~append(.Python['a', 'b', 'c'])
+        list~append(.Python~py.listOf('a', 'b', 'c'))
 
         actual = .Python~len(list)
 
         self~assertSame(7, unbox(actual))
 
     ::method test_iteration
-        list = .Python['a', 'b', 'c']
+        list = .Python~py.listOf('a', 'b', 'c')
 
         concat = ''
 

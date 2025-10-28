@@ -31,7 +31,7 @@ return testResult
         self~assertSame(5, unbox(actual))
 
     ::method test_newNonEmptySet_fromIterableList
-        set = .Python~set(.Python['a', 'b', 'c'])
+        set = .Python~set(.Python~py.listOf('a', 'b', 'c'))
         actual = .Python~len(set)
         self~assertSame(3, unbox(actual))
 
@@ -46,7 +46,7 @@ return testResult
         self~assertSame(3, unbox(actual))
 
     ::method test_remove
-        set = .Python~set(.Python['a', 'b', 'c'])
+        set = .Python~set(.Python~py.listOf('a', 'b', 'c'))
         set~remove('c')
 
         actual = .Python~len(set)
@@ -54,49 +54,49 @@ return testResult
         self~assertSame(2, unbox(actual))
 
     ::method test_contains
-        set = .Python~set(.Python['a', 'b', 'c'])
+        set = .Python~set(.Python~py.listOf('a', 'b', 'c'))
         actual = .Python~operator.contains(set, 'a')
         self~assertTrue(unbox(actual))
 
     ::method test_containsNot
-        set = .Python~set(.Python['a', 'b', 'c'])
+        set = .Python~set(.Python~py.listOf('a', 'b', 'c'))
         actual = .Python~operator.contains(set, 'd')
         self~assertFalse(unbox(actual))
 
     ::method test_union
-        set1 = .Python~set(.Python['a', 'b', 'c'])
-        set2 = .Python~set(.Python['c', 'd', 'e'])
+        set1 = .Python~set(.Python~py.listOf('a', 'b', 'c'))
+        set2 = .Python~set(.Python~py.listOf('c', 'd', 'e'))
         union = set1~union(set2)
 
         actual = .Python~len(union)
         self~assertSame(5, unbox(actual))
 
     ::method test_intersection
-        set1 = .Python~set(.Python['a', 'b', 'c'])
-        set2 = .Python~set(.Python['c', 'd', 'e'])
+        set1 = .Python~set(.Python~py.listOf('a', 'b', 'c'))
+        set2 = .Python~set(.Python~py.listOf('c', 'd', 'e'))
         intersection = set1~intersection(set2)
 
         actual = .Python~len(intersection)
         self~assertSame(1, unbox(actual))
 
     ::method test_difference
-        set1 = .Python~set(.Python['a', 'b', 'c'])
-        set2 = .Python~set(.Python['c', 'd', 'e'])
+        set1 = .Python~set(.Python~py.listOf('a', 'b', 'c'))
+        set2 = .Python~set(.Python~py.listOf('c', 'd', 'e'))
         difference = set1~difference(set2)
 
         actual = .Python~len(difference)
         self~assertSame(2, unbox(actual))
 
     ::method test_symmetric_difference
-        set1 = .Python~set(.Python['a', 'b', 'c'])
-        set2 = .Python~set(.Python['c', 'd', 'e'])
+        set1 = .Python~set(.Python~py.listOf('a', 'b', 'c'))
+        set2 = .Python~set(.Python~py.listOf('c', 'd', 'e'))
         symmetric_difference = set1~symmetric_difference(set2)
 
         actual = .Python~len(symmetric_difference)
         self~assertSame(4, unbox(actual))
 
     ::method test_iter
-        set = .Python~set(.Python['a', 'b', 'c'])
+        set = .Python~set(.Python~py.listOf('a', 'b', 'c'))
         iterator = .Python~iter(set)
 
         concat = ''
@@ -105,7 +105,7 @@ return testResult
             concat ||= unbox(.Python~next(iterator))
         end
 
-        expected = .Python['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
+        expected = .Python~py.listOf('abc', 'acb', 'bac', 'bca', 'cab', 'cba')
         actual = .Python~operator.contains(expected, concat)
 
         self~assertTrue(unbox(actual))

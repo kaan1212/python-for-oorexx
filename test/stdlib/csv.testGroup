@@ -48,7 +48,7 @@ return testResult
         -- Write.
         f = .Python~open(file, 'w', kwargs)
         writer = .Python~csv.writer(f)
-        writer~writerow(.Python['a', 'b', 'c'])
+        writer~writerow(.Python~py.listOf('a', 'b', 'c'))
         f~close
 
         -- Read.
@@ -72,7 +72,7 @@ return testResult
 
         .Python~import('csv')
 
-        csvreader = .Python~csv.reader(.Python['one,two,three'])
+        csvreader = .Python~csv.reader(.Python~py.listOf('one,two,three'))
         row = .Python~next(csvreader)
 
         self~assertSame("['one', 'two', 'three']", row~py.fromPythonString)
