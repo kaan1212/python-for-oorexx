@@ -20,10 +20,6 @@ return testResult
     See: https://docs.python.org/3/library/datetime.html
 */
 ::class datetime.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_datetime_combine_import
         /*
             Python example:
@@ -33,14 +29,12 @@ return testResult
             >>> datetime.datetime.combine(d, t)
             datetime.datetime(2005, 7, 14, 12, 30)
         */
-        expose py
+        .Python~import('datetime')
+        d = .Python~datetime.date(.Python~2005, .Python~7, .Python~14)
+        t = .Python~datetime.time(.Python~12, .Python~30)
+        dt = .Python~datetime.datetime.combine(d, t)
 
-        py~import('datetime')
-        d = py~datetime.date(py~2005, py~7, py~14)
-        t = py~datetime.time(py~12, py~30)
-        dt = py~datetime.datetime.combine(d, t)
-
-        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(py~repr(dt)))
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(.Python~repr(dt)))
         self~assertSame(2005, unbox(dt~year))
         self~assertSame(7, unbox(dt~month))
         self~assertSame(14, unbox(dt~day))
@@ -56,14 +50,12 @@ return testResult
             >>> datetime.combine(d, t)
             datetime.datetime(2005, 7, 14, 12, 30)
         */
-        expose py
+        .Python~from('datetime')~import('date', 'time', 'datetime')
+        d = .Python~date(.Python~2005, .Python~7, .Python~14)
+        t = .Python~time(.Python~12, .Python~30)
+        dt = .Python~datetime.combine(d, t)
 
-        py~from('datetime')~import('date', 'time', 'datetime')
-        d = py~date(py~2005, py~7, py~14)
-        t = py~time(py~12, py~30)
-        dt = py~datetime.combine(d, t)
-
-        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(py~repr(dt)))
+        self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(.Python~repr(dt)))
         self~assertSame(2005, unbox(dt~year))
         self~assertSame(7, unbox(dt~month))
         self~assertSame(14, unbox(dt~day))
@@ -77,12 +69,10 @@ return testResult
             >>> date(1991, 2, 20)
             datetime.date(1991, 2, 20)
         */
-        expose py
+        .Python~from('datetime')~import('date')
+        date = .Python~date(.Python~1991, .Python~2, .Python~20)
 
-        py~from('datetime')~import('date')
-        date = py~date(py~1991, py~2, py~20)
-
-        self~assertSame('datetime.date(1991, 2, 20)', unbox(py~repr(date)))
+        self~assertSame('datetime.date(1991, 2, 20)', unbox(.Python~repr(date)))
         self~assertSame(1991, unbox(date~year))
         self~assertSame(2, unbox(date~month))
         self~assertSame(20, unbox(date~day))
@@ -94,12 +84,10 @@ return testResult
             >>> datetime.fromisoformat('2011-11-04T00:05:23')
             datetime.datetime(2011, 11, 4, 0, 5, 23)
         */
-        expose py
+        .Python~from('datetime')~import('datetime')
+        datetime = .Python~datetime.fromisoformat('2011-11-04T00:05:23')
 
-        py~from('datetime')~import('datetime')
-        datetime = py~datetime.fromisoformat('2011-11-04T00:05:23')
-
-        self~assertSame('datetime.datetime(2011, 11, 4, 0, 5, 23)', unbox(py~repr(datetime)))
+        self~assertSame('datetime.datetime(2011, 11, 4, 0, 5, 23)', unbox(.Python~repr(datetime)))
         self~assertSame(2011, unbox(datetime~year))
         self~assertSame(11, unbox(datetime~month))
         self~assertSame(4, unbox(datetime~day))
@@ -114,12 +102,10 @@ return testResult
             >>> time.fromisoformat('04:23:01')
             datetime.time(4, 23, 1)
         */
-        expose py
+        .Python~from('datetime')~import('time')
+        time = .Python~time.fromisoformat('04:23:01')
 
-        py~from('datetime')~import('time')
-        time = py~time.fromisoformat('04:23:01')
-
-        self~assertSame('datetime.time(4, 23, 1)', unbox(py~repr(time)))
+        self~assertSame('datetime.time(4, 23, 1)', unbox(.Python~repr(time)))
         self~assertSame(4, unbox(time~hour))
         self~assertSame(23, unbox(time~minute))
         self~assertSame(1, unbox(time~second))
@@ -134,10 +120,8 @@ return testResult
             >>> duration.total_seconds()
             11235813.0
         */
-        expose py
-
-        py~from('datetime')~import('timedelta')
-        duration = py~timedelta(py~kwd('seconds', py~11235813))
+        .Python~from('datetime')~import('timedelta')
+        duration = .Python~timedelta(.Python~kwd('seconds', .Python~11235813))
 
         self~assertSame(130, unbox(duration~days))
         self~assertSame(3813, unbox(duration~seconds))

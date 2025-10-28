@@ -18,43 +18,32 @@ return testResult
     Examples: https://docs.python.org/3/library/functions.html#int
 */
 ::class int.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_noArguments
-        expose py
-        actual = py~int
+        actual = .Python~int
         self~assertSame(0, unbox(actual))
 
     ::method test_float
-        expose py
-        float = py~float(123.45)
-        actual = py~int(float)
+        float = .Python~float(123.45)
+        actual = .Python~int(float)
         self~assertSame(123, unbox(actual))
 
     ::method test_string
-        expose py
-        actual = py~int('123')
+        actual = .Python~int('123')
         self~assertSame(123, unbox(actual))
 
     ::method test_string_whitespacesAndUnderscore
-        expose py
-        string = py~escape('   -12_345\n')
-        actual = py~int(string)
+        string = .Python~escape('   -12_345\n')
+        actual = .Python~int(string)
         self~assertSame(-12345, unbox(actual))
 
     ::method test_string_base16
-        expose py
-        actual = py~int('FACE', py~int(16))
+        actual = .Python~int('FACE', .Python~int(16))
         self~assertSame(64206, unbox(actual))
 
     ::method test_string_prefix
-        expose py
-        actual = py~int('0xface', py~int(0))
+        actual = .Python~int('0xface', .Python~int(0))
         self~assertSame(64206, unbox(actual))
 
     ::method test_string_base2
-        expose py
-        actual = py~int('01110011', py~int(2))
+        actual = .Python~int('01110011', .Python~int(2))
         self~assertSame(115, unbox(actual))

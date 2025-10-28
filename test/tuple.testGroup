@@ -20,27 +20,20 @@ return testResult
     https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences
 */
 ::class tuple.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_newEmptyTuple
-        expose py
-        tuple = py~tuple
-        actual = py~len(tuple)
+        tuple = .Python~tuple
+        actual = .Python~len(tuple)
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyTuple_fromIterable
-        expose py
-        tuple = py~tuple(py['a', 'b', 'c'])
-        actual = py~len(tuple)
+        tuple = .Python~tuple(.Python['a', 'b', 'c'])
+        actual = .Python~len(tuple)
         self~assertSame(3, unbox(actual))
 
     ::method test_indexing_get
-        expose py
-        tuple = py~tuple(py['a', 'b', 'c'])
+        tuple = .Python~tuple(.Python['a', 'b', 'c'])
 
-        index = py~int(1)
+        index = .Python~int(1)
         actual = tuple[index]
 
         self~assertSame('b', unbox(actual))

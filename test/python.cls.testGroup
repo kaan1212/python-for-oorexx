@@ -18,27 +18,20 @@ return testResult
     The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
 */
 ::class python.cls.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_escape_linefeed
-        expose py
-        actual = py~escape('hello, world\n')
+        actual = .Python~escape('hello, world\n')
         self~assertSame('hello, world' || '0a'x, actual)
 
     ::method test_escape_linefeed_complex
-        expose py
-        actual = py~escape('\hello, world\\n')
+        actual = .Python~escape('\hello, world\\n')
         self~assertSame('\hello, world\' || '0a'x, actual)
 
     ::method test_escape_linefeed_multiple
-        expose py
         string = 'first line\n'
         string ||= 'second line\n'
         string ||= 'third line\n'
 
-        actual = py~escape(string)
+        actual = .Python~escape(string)
 
         nl = .String~nl -- '0a'x
         result = 'first line'nl
@@ -48,6 +41,5 @@ return testResult
         self~assertSame(result, actual)
 
     ::method test_escape_horizontalTab
-        expose py
-        actual = py~escape('column\tcolumn')
+        actual = .Python~escape('column\tcolumn')
         self~assertSame('column' || .String~tab || 'column', actual)

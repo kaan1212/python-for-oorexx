@@ -20,54 +20,42 @@ return testResult
     https://docs.python.org/3/tutorial/introduction.html#text
 */
 ::class str.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_newEmptyString_usingLiteral
-        expose py
         string = ''
-        actual = py~len(string)
+        actual = .Python~len(string)
         self~assertSame(0, unbox(actual))
 
     ::method test_newEmptyString_usingConstructor
-        expose py
-        string = py~str
-        actual = py~len(string)
+        string = .Python~str
+        actual = .Python~len(string)
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyString_usingLiteral
-        expose py
         string = 'hello, world'
-        actual = py~len(string)
+        actual = .Python~len(string)
         self~assertSame(12, unbox(actual))
 
     ::method test_newNonEmptyString_usingConstructor
-        expose py
-        string = py~str('hello, world')
-        actual = py~len(string)
+        string = .Python~str('hello, world')
+        actual = .Python~len(string)
         self~assertSame(12, unbox(actual))
 
     ::method test_indexing
-        expose py
-        string = py~str('hello, world')
-        index = py~int(0)
+        string = .Python~str('hello, world')
+        index = .Python~int(0)
 
         actual = string[index]
 
         self~assertSame('h', unbox(actual))
 
     ::method test_trueString_isNotRexxTrue
-        expose py
-        actual = py~str('True')
+        actual = .Python~str('True')
         self~assertNotSame(.true, unbox(actual))
 
     ::method test_falseString_isNotRexxFalse
-        expose py
-        actual = py~str('False')
+        actual = .Python~str('False')
         self~assertNotSame(.false, unbox(actual))
 
     ::method test_noneString_isNotRexxNil
-        expose py
-        actual = py~str('None')
+        actual = .Python~str('None')
         self~assertNotNil(unbox(actual))

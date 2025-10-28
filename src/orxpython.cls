@@ -5,7 +5,7 @@
 ::routine unbox public
     use arg pythonObject
 
-    type = .Python~new~type(pythonObject)~__name__~py.fromPythonString
+    type = .Python~type(pythonObject)~__name__~py.fromPythonString
 
     select case type
         when 'NoneType' then return .nil
@@ -16,13 +16,13 @@
 
 
 ::class 'Python' public
-    ::attribute False get
-    ::attribute True get
-    ::attribute None get
+    ::attribute False class get
+    ::attribute True class get
+    ::attribute None class get
 
-    ::attribute pythonObjectRegistry get private
+    ::attribute pythonObjectRegistry class get private
 
-    ::method init
+    ::method activate class
         expose False True None pythonObjectRegistry
         pythonObjectRegistry = .StringTable~new
 
@@ -41,15 +41,23 @@
         -- Import Python standard operators ([key], [start:stop:step], del, in) as functions.
         self~import('operator')
 
-    ::method import
+    ::method id class
+        use arg pythonObject
+
+        if arg() == 0 then
+            return self~id:super
+        else
+            return self~callFunction('id', pythonObject)
+
+    ::method import class
         use arg name
         call PyRexx_CallFunction 'invoke_import', name
 
-    ::method from
+    ::method from class
         use arg name
         return .PythonFromClause~new(name)
 
-    ::method unknown
+    ::method unknown class
         use arg name, args
 
         if name~dataType() == 'NUM' then
@@ -57,7 +65,7 @@
 
         return self~callFunction(name, args)
 
-    ::method callFunction
+    ::method callFunction class
         use arg name, args
 
         if \ args~isA(.Array) then
@@ -67,7 +75,7 @@
 
         return self~getPythonProxyObject(identity)
 
-    ::method callMethod
+    ::method callMethod class
         use arg identity, name, args
 
         if \ args~isA(.Array) then
@@ -77,16 +85,16 @@
 
         return self~getPythonProxyObject(identity)
 
-    ::method getPythonProxyObject private
+    ::method getPythonProxyObject class private
         expose pythonObjectRegistry
         use arg identity
 
         if \ pythonObjectRegistry~hasIndex(identity) then
-            pythonObjectRegistry[identity] = .PythonObject~new(self, identity)
+            pythonObjectRegistry[identity] = .PythonObject~new(identity)
 
         return pythonObjectRegistry[identity]
 
-    ::method kwd
+    ::method kwd class
         use arg keyword, value
 
         kwargs = self~kwargs
@@ -94,7 +102,7 @@
 
         return kwargs
 
-    ::method kwargs
+    ::method kwargs class
         use arg dict=(self~callFunction('dict'))
 
         -- Mark this dictionary for storing keyword arguments.
@@ -102,7 +110,7 @@
 
         return dict
 
-    ::method '[]'
+    ::method '[]' class
         list = self~callFunction('list')
 
         do i=1 to arg()
@@ -111,14 +119,14 @@
 
         return list
 
-    ::method escape
+    ::method escape class
         -- See: https://docs.python.org/3/reference/lexical_analysis.html#escape-sequences
         use arg string
         return string,
             ~changeStr('\n', .String~nl),
             ~changeStr('\t', .String~tab)
 
-    ::method defineClass
+    ::method defineClass class
         use arg rexxClassOrObject, pythonBaseClassName
 
         if rexxClassOrObject~isInstanceOf(.Class) then do
@@ -142,43 +150,38 @@
         end
 
         rexxClassName = rexxClass~id
-        call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNamesUnboxed, self
+        call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNamesUnboxed
 
 
 ::class 'PythonObject'
-    ::attribute runtime get private
     ::attribute identity get
 
     ::method init
-        expose runtime identity
-        use arg runtime, identity
+        expose identity
+        use arg identity
 
     ::method objectName
-        expose runtime
-
-        type = unbox(runtime~type(self)~__name__)
-        id = unbox(runtime~id(self))
+        type = unbox(.Python~type(self)~__name__)
+        id = unbox(.Python~id(self))
 
         return type || '@' || id
 
     ::method unknown
-        expose runtime identity
+        expose identity
         use arg name, args
-        return runtime~callMethod(identity, name, args)
+        return .Python~callMethod(identity, name, args)
 
     ::method py.fromPythonString
         expose identity
         return PyRexx_CallFunction('invoke_str', identity)
 
     ::method makeArray
-        expose runtime
-
         -- Materialize len for performance.
-        len = unbox(runtime~callFunction('len', self))
+        len = unbox(.Python~callFunction('len', self))
         array = .Array~new(len)
 
         do i=0 to len-1
-            index = runtime~callFunction('int', i)
+            index = .Python~callFunction('int', i)
             array~append(self[index])
         end
 
@@ -190,18 +193,15 @@
         return a = b
 
     ::method '[]='
-        expose runtime
         use arg value, key
 
         -- Indexing.
-        return runtime~callFunction('operator.setitem', self, key, value)
+        return .Python~callFunction('operator.setitem', self, key, value)
 
     ::method '[]'
-        expose runtime
-
         -- Indexing.
         if arg() == 1 then
-            return runtime~callFunction('operator.getitem', self, arg(1))
+            return .Python~callFunction('operator.getitem', self, arg(1))
 
         /*
             Slicing.
@@ -214,7 +214,7 @@
             See: https://docs.python.org/3/reference/datamodel.html#object.__length_hint__
         */
         use arg start=.nil, stop=.nil, step=.nil
-        slice = runtime~callFunction('slice', start, stop, step)
+        slice = .Python~callFunction('slice', start, stop, step)
         return self[slice]
 
 

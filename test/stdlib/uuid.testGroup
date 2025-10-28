@@ -25,38 +25,34 @@ return testResult
 */
 ::class uuid.testGroup public subclass ooTestCase
     ::method setUp
-        expose py re
-        py = .Python~new()
+        expose re
         re = .RegularExpression~new('[:xdigit:]{8}-[:xdigit:]{4}-[:xdigit:]{4}-[:xdigit:]{4}-[:xdigit:]{12}')
 
     ::method test_uuid1
-        expose py re
-        py~import('uuid')
-        uuid = py~uuid.uuid1()
+        expose re
+        .Python~import('uuid')
+        uuid = .Python~uuid.uuid1()
         self~assertTrue(re~match(uuid~py.fromPythonString))
 
     ::method test_uuid3
-        expose py
-        py~import('uuid')
-        uuid = py~uuid.uuid3(py~uuid.NAMESPACE_DNS, 'python.org')
+        .Python~import('uuid')
+        uuid = .Python~uuid.uuid3(.Python~uuid.NAMESPACE_DNS, 'python.org')
         self~assertSame('6fa459ea-ee8a-3ca4-894e-db77e160355e', uuid~py.fromPythonString)
 
     ::method test_uuid4
-        expose py re
-        py~import('uuid')
-        uuid = py~uuid.uuid4()
+        expose re
+        .Python~import('uuid')
+        uuid = .Python~uuid.uuid4()
         self~assertTrue(re~match(uuid~py.fromPythonString))
 
     ::method test_uuid5
-        expose py
-        py~import('uuid')
-        uuid = py~uuid.uuid5(py~uuid.NAMESPACE_DNS, 'python.org')
+        .Python~import('uuid')
+        uuid = .Python~uuid.uuid5(.Python~uuid.NAMESPACE_DNS, 'python.org')
         self~assertSame('886313e1-3b8a-5372-9b90-0c9aee199e5d', uuid~py.fromPythonString)
 
     ::method test_UUID
-        expose py
-        py~import('uuid')
-        uuid = py~uuid.UUID('{00010203-0405-0607-0809-0a0b0c0d0e0f}')
+        .Python~import('uuid')
+        uuid = .Python~uuid.UUID('{00010203-0405-0607-0809-0a0b0c0d0e0f}')
         self~assertSame('00010203-0405-0607-0809-0a0b0c0d0e0f', uuid~py.fromPythonString)
         self~assertSame("b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'", uuid~bytes~py.fromPythonString)
-        self~assertSame('00010203-0405-0607-0809-0a0b0c0d0e0f', py~uuid.UUID(py~kwd('bytes', uuid~bytes))~py.fromPythonString)
+        self~assertSame('00010203-0405-0607-0809-0a0b0c0d0e0f', .Python~uuid.UUID(.Python~kwd('bytes', uuid~bytes))~py.fromPythonString)

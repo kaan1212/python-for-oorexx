@@ -20,108 +20,92 @@ return testResult
     https://docs.python.org/3/tutorial/datastructures.html#sets
 */
 ::class set.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_newEmptySet
-        expose py
-        set = py~set
-        actual = py~len(set)
+        set = .Python~set
+        actual = .Python~len(set)
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptySet_fromIterableString
-        expose py
-        set = py~set('foobar')
-        actual = py~len(set)
+        set = .Python~set('foobar')
+        actual = .Python~len(set)
         self~assertSame(5, unbox(actual))
 
     ::method test_newNonEmptySet_fromIterableList
-        expose py
-        set = py~set(py['a', 'b', 'c'])
-        actual = py~len(set)
+        set = .Python~set(.Python['a', 'b', 'c'])
+        actual = .Python~len(set)
         self~assertSame(3, unbox(actual))
 
     ::method test_add
-        expose py
-        set = py~set
+        set = .Python~set
         set~add('a')
         set~add('b')
         set~add('c')
 
-        actual = py~len(set)
+        actual = .Python~len(set)
 
         self~assertSame(3, unbox(actual))
 
     ::method test_remove
-        expose py
-        set = py~set(py['a', 'b', 'c'])
+        set = .Python~set(.Python['a', 'b', 'c'])
         set~remove('c')
 
-        actual = py~len(set)
+        actual = .Python~len(set)
 
         self~assertSame(2, unbox(actual))
 
     ::method test_contains
-        expose py
-        set = py~set(py['a', 'b', 'c'])
-        actual = py~operator.contains(set, 'a')
+        set = .Python~set(.Python['a', 'b', 'c'])
+        actual = .Python~operator.contains(set, 'a')
         self~assertTrue(unbox(actual))
 
     ::method test_containsNot
-        expose py
-        set = py~set(py['a', 'b', 'c'])
-        actual = py~operator.contains(set, 'd')
+        set = .Python~set(.Python['a', 'b', 'c'])
+        actual = .Python~operator.contains(set, 'd')
         self~assertFalse(unbox(actual))
 
     ::method test_union
-        expose py
-        set1 = py~set(py['a', 'b', 'c'])
-        set2 = py~set(py['c', 'd', 'e'])
+        set1 = .Python~set(.Python['a', 'b', 'c'])
+        set2 = .Python~set(.Python['c', 'd', 'e'])
         union = set1~union(set2)
 
-        actual = py~len(union)
+        actual = .Python~len(union)
         self~assertSame(5, unbox(actual))
 
     ::method test_intersection
-        expose py
-        set1 = py~set(py['a', 'b', 'c'])
-        set2 = py~set(py['c', 'd', 'e'])
+        set1 = .Python~set(.Python['a', 'b', 'c'])
+        set2 = .Python~set(.Python['c', 'd', 'e'])
         intersection = set1~intersection(set2)
 
-        actual = py~len(intersection)
+        actual = .Python~len(intersection)
         self~assertSame(1, unbox(actual))
 
     ::method test_difference
-        expose py
-        set1 = py~set(py['a', 'b', 'c'])
-        set2 = py~set(py['c', 'd', 'e'])
+        set1 = .Python~set(.Python['a', 'b', 'c'])
+        set2 = .Python~set(.Python['c', 'd', 'e'])
         difference = set1~difference(set2)
 
-        actual = py~len(difference)
+        actual = .Python~len(difference)
         self~assertSame(2, unbox(actual))
 
     ::method test_symmetric_difference
-        expose py
-        set1 = py~set(py['a', 'b', 'c'])
-        set2 = py~set(py['c', 'd', 'e'])
+        set1 = .Python~set(.Python['a', 'b', 'c'])
+        set2 = .Python~set(.Python['c', 'd', 'e'])
         symmetric_difference = set1~symmetric_difference(set2)
 
-        actual = py~len(symmetric_difference)
+        actual = .Python~len(symmetric_difference)
         self~assertSame(4, unbox(actual))
 
     ::method test_iter
-        expose py
-        set = py~set(py['a', 'b', 'c'])
-        iterator = py~iter(set)
+        set = .Python~set(.Python['a', 'b', 'c'])
+        iterator = .Python~iter(set)
 
         concat = ''
 
-        do unbox(py~len(set))
-            concat ||= unbox(py~next(iterator))
+        do unbox(.Python~len(set))
+            concat ||= unbox(.Python~next(iterator))
         end
 
-        expected = py['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
-        actual = py~operator.contains(expected, concat)
+        expected = .Python['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
+        actual = .Python~operator.contains(expected, concat)
 
         self~assertTrue(unbox(actual))

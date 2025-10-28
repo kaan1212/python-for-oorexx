@@ -24,25 +24,19 @@ return testResult
     - https://docs.python.org/3/library/urllib.request.html#examples
 */
 ::class urllib.request.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new()
-
     ::method test_urlopen
-        expose py
-        py~import('urllib.request')
+        .Python~import('urllib.request')
 
-        f = py~urllib.request.urlopen('https://www.oorexx.org/')
-        html = f~read(py~100)~decode('utf-8')
+        f = .Python~urllib.request.urlopen('https://www.oorexx.org/')
+        html = f~read(.Python~100)~decode('utf-8')
 
         self~assertTrue(unbox(html~startswith('<!DOCTYPE html')))
 
     ::method test_Request
-        expose py
-        py~import('urllib.request')
+        .Python~import('urllib.request')
 
-        req = py~urllib.request.Request('https://www.oorexx.org/')
-        f = py~urllib.request.urlopen(req)
-        html = f~read(py~100)~decode('utf-8')
+        req = .Python~urllib.request.Request('https://www.oorexx.org/')
+        f = .Python~urllib.request.urlopen(req)
+        html = f~read(.Python~100)~decode('utf-8')
 
         self~assertTrue(unbox(html~startswith('<!DOCTYPE html')))

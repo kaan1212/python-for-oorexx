@@ -22,13 +22,7 @@ return testResult
     https://docs.python.org/3/tutorial/controlflow.html#special-parameters
 */
 ::class arguments.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_open_withKwargs
-        expose py
-
         /*
             Function parameters:
 
@@ -36,23 +30,21 @@ return testResult
         */
 
         -- Write to file.
-        kwargs = py~kwargs
+        kwargs = .Python~kwargs
         kwargs['mode'] = 'w'
         kwargs['encoding'] = 'utf-8'
 
-        f = py~open('test-output/test_arguments.txt', kwargs)
+        f = .Python~open('test-output/test_arguments.txt', kwargs)
         f~write('hello, world')
         f~close
 
         -- Read from file.
-        f = py~open('test-output/test_arguments.txt')
+        f = .Python~open('test-output/test_arguments.txt')
         actual = f~read
         f~close
         self~assertSame('hello, world', unbox(actual))
 
     ::method test_open_withDict
-        expose py
-
         /*
             Function parameters:
 
@@ -60,18 +52,18 @@ return testResult
         */
 
         -- Write to file.
-        dict = py~dict
+        dict = .Python~dict
         dict['mode'] = 'w'
         dict['encoding'] = 'utf-8'
 
-        kwargs = py~kwargs(dict)
+        kwargs = .Python~kwargs(dict)
 
-        f = py~open('test-output/test_arguments.txt', kwargs)
+        f = .Python~open('test-output/test_arguments.txt', kwargs)
         f~write('hello, world')
         f~close
 
         -- Read from file.
-        f = py~open('test-output/test_arguments.txt')
+        f = .Python~open('test-output/test_arguments.txt')
         actual = f~read
         f~close
         self~assertSame('hello, world', unbox(actual))

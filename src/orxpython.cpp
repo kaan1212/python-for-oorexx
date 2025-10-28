@@ -113,7 +113,6 @@ RexxClassObject pythonInstanceClass;
 
 RexxThreadContext* _threadContext;
 RexxObjectPtr _rexxObject;
-RexxObjectPtr _rexxPyRexx;
 
 PyObject* handle_callback(PyObject* self, PyObject* args) {
 	const char* messageName = PyUnicode_AsUTF8(self);
@@ -131,7 +130,7 @@ PyObject* handle_callback(PyObject* self, PyObject* args) {
 		PyObject* pIdentity = PyObject_CallOneArg(store_object, item);
 		const char* cIdentity = PyUnicode_AsUTF8(pIdentity);
 		RexxStringObject rIdentity = _threadContext->NewStringFromAsciiz(cIdentity);
-		RexxObjectPtr pythonInstance = _threadContext->SendMessage2(pythonInstanceClass, "new", _rexxPyRexx, rIdentity);
+		RexxObjectPtr pythonInstance = _threadContext->SendMessage1(pythonInstanceClass, "new", rIdentity);
 
 		_threadContext->ArrayAppend(rexxArray, pythonInstance);
 	}
@@ -142,10 +141,9 @@ PyObject* handle_callback(PyObject* self, PyObject* args) {
 	Py_RETURN_NONE;
 }
 
-RexxRoutine5(RexxObjectPtr, PyRexx_DefineClass, RexxObjectPtr, rexxObject, CSTRING, rexxClassName, CSTRING, pythonBaseClassName, RexxArrayObject, methodNames, RexxObjectPtr, rexxPyRexx) {
+RexxRoutine4(RexxObjectPtr, PyRexx_DefineClass, RexxObjectPtr, rexxObject, CSTRING, rexxClassName, CSTRING, pythonBaseClassName, RexxArrayObject, methodNames) {
 	_threadContext = context->threadContext;
 	_rexxObject = rexxObject;
-	_rexxPyRexx = rexxPyRexx;
 
 	pythonInstanceClass = context->FindContextClass("PythonObject");
 

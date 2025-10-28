@@ -18,10 +18,6 @@ return testResult
     See: https://docs.python.org/3/library/csv.html
 */
 ::class csv.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_writer_reader
         /*
             Python example:
@@ -42,25 +38,23 @@ return testResult
             ['a', 'b', 'c']
         */
 
-        expose py
-
-        py~import('csv')
+        .Python~import('csv')
 
         file = 'test-output/test_csv.csv'
 
-        kwargs = py~kwargs
+        kwargs = .Python~kwargs
         kwargs['newline'] = ''
 
         -- Write.
-        f = py~open(file, 'w', kwargs)
-        writer = py~csv.writer(f)
-        writer~writerow(py['a', 'b', 'c'])
+        f = .Python~open(file, 'w', kwargs)
+        writer = .Python~csv.writer(f)
+        writer~writerow(.Python['a', 'b', 'c'])
         f~close
 
         -- Read.
-        f = py~open(file, kwargs)
-        reader = py~csv.reader(f)
-        row = py~next(reader)
+        f = .Python~open(file, kwargs)
+        reader = .Python~csv.reader(f)
+        row = .Python~next(reader)
         f~close
 
         self~assertSame("['a', 'b', 'c']", row~py.fromPythonString)
@@ -76,11 +70,9 @@ return testResult
             ['one', 'two', 'three']
         */
 
-        expose py
+        .Python~import('csv')
 
-        py~import('csv')
-
-        csvreader = py~csv.reader(py['one,two,three'])
-        row = py~next(csvreader)
+        csvreader = .Python~csv.reader(.Python['one,two,three'])
+        row = .Python~next(csvreader)
 
         self~assertSame("['one', 'two', 'three']", row~py.fromPythonString)

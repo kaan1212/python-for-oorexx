@@ -20,90 +20,77 @@ return testResult
     https://docs.python.org/3/tutorial/introduction.html#lists
 */
 ::class list.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_newEmptyList_usingBrackets
-        expose py
-        list = py[]
-        actual = py~len(list)
+        list = .Python[]
+        actual = .Python~len(list)
         self~assertSame(0, unbox(actual))
 
     ::method test_newEmptyList_usingConstructor
-        expose py
-        list = py~list
-        actual = py~len(list)
+        list = .Python~list
+        actual = .Python~len(list)
         self~assertSame(0, unbox(actual))
 
     ::method test_newNonEmptyList_usingBrackets
-        expose py
-        list = py['a', 'b', 'c']
-        actual = py~len(list)
+        list = .Python['a', 'b', 'c']
+        actual = .Python~len(list)
         self~assertSame(3, unbox(actual))
 
     ::method test_newNonEmptyList_usingConstructor
-        expose py
-        stop = py~int(3)
-        iterable = py~range(stop)
-        list = py~list(iterable)
+        stop = .Python~int(3)
+        iterable = .Python~range(stop)
+        list = .Python~list(iterable)
 
-        actual = py~len(list)
+        actual = .Python~len(list)
 
         self~assertSame(3, unbox(actual))
 
     ::method test_indexing_get
-        expose py
-        list = py['a', 'b', 'c']
-        index = py~int(1)
+        list = .Python['a', 'b', 'c']
+        index = .Python~int(1)
 
         actual = list[index]
 
         self~assertSame('b', unbox(actual))
 
     ::method test_indexing_set
-        expose py
-        list = py['a', 'b', 'c']
-        index = py~int(1)
+        list = .Python['a', 'b', 'c']
+        index = .Python~int(1)
 
         list[index] = 'bravo'
 
         self~assertSame('bravo', unbox(list[index]))
 
     ::method test_append
-        expose py
-        list = py[]
+        list = .Python[]
         list~append('a')
         list~append('b')
         list~append('c')
 
-        actual = py~len(list)
+        actual = .Python~len(list)
 
         self~assertSame(3, unbox(actual))
 
     ::method test_append_differentTypes
-        expose py
-        list = py[]
+        list = .Python[]
         list~append('a')
-        list~append(py~str('a'))
-        list~append(py~int(1))
-        list~append(py~float(1.0))
-        list~append(py~True)
-        list~append(py~None)
-        list~append(py['a', 'b', 'c'])
+        list~append(.Python~str('a'))
+        list~append(.Python~int(1))
+        list~append(.Python~float(1.0))
+        list~append(.Python~True)
+        list~append(.Python~None)
+        list~append(.Python['a', 'b', 'c'])
 
-        actual = py~len(list)
+        actual = .Python~len(list)
 
         self~assertSame(7, unbox(actual))
 
     ::method test_iteration
-        expose py
-        list = py['a', 'b', 'c']
+        list = .Python['a', 'b', 'c']
 
         concat = ''
 
         do i=0 to 2
-            index = py~int(i)
+            index = .Python~int(i)
             concat ||= unbox(list[index])
         end
 

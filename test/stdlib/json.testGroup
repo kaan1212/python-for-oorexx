@@ -18,10 +18,6 @@ return testResult
     See: https://docs.python.org/3/library/json.html
 */
 ::class json.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_dumps
         /*
             Python example:
@@ -30,14 +26,12 @@ return testResult
             '["foo", {"bar": ["baz", null, 1.0, 2]}]'
         */
 
-        expose py
+        .Python~import('json')
 
-        py~import('json')
-
-        objChild = py~dict
-        objChild['bar'] = py~tuple(py['baz', py~None, py~float(1.0), py~int(2)])
-        obj = py['foo', objChild]
-        actual = py~json.dumps(obj)
+        objChild = .Python~dict
+        objChild['bar'] = .Python~tuple(.Python['baz', .Python~None, .Python~float(1.0), .Python~int(2)])
+        obj = .Python['foo', objChild]
+        actual = .Python~json.dumps(obj)
 
         self~assertSame('["foo", {"bar": ["baz", null, 1.0, 2]}]', actual~py.fromPythonString)
 
@@ -49,18 +43,16 @@ return testResult
             {"a": 0, "b": 0, "c": 0}
         */
 
-        expose py
+        .Python~import('json')
 
-        py~import('json')
+        dict = .Python~dict
+        dict['c'] = .Python~int(0)
+        dict['b'] = .Python~int(0)
+        dict['a'] = .Python~int(0)
 
-        dict = py~dict
-        dict['c'] = py~int(0)
-        dict['b'] = py~int(0)
-        dict['a'] = py~int(0)
-
-        kwargs = py~kwargs
-        kwargs['sort_keys'] = py~True
-        actual = py~json.dumps(dict, kwargs)
+        kwargs = .Python~kwargs
+        kwargs['sort_keys'] = .Python~True
+        actual = .Python~json.dumps(dict, kwargs)
 
         self~assertSame('{"a": 0, "b": 0, "c": 0}', actual~py.fromPythonString)
 
@@ -72,18 +64,16 @@ return testResult
             '[1,2,3,{"4":5,"6":7}]'
         */
 
-        expose py
+        .Python~import('json')
 
-        py~import('json')
+        dict = .Python~dict
+        dict['4'] = .Python~int(5)
+        dict['6'] = .Python~int(7)
+        obj = .Python[.Python~int(1), .Python~int(2), .Python~int(3), dict]
 
-        dict = py~dict
-        dict['4'] = py~int(5)
-        dict['6'] = py~int(7)
-        obj = py[py~int(1), py~int(2), py~int(3), dict]
-
-        kwargs = py~kwargs
-        kwargs['separators'] = py~tuple(py[',', ':'])
-        actual = py~json.dumps(obj, kwargs)
+        kwargs = .Python~kwargs
+        kwargs['separators'] = .Python~tuple(.Python[',', ':'])
+        actual = .Python~json.dumps(obj, kwargs)
 
         self~assertSame('[1,2,3,{"4":5,"6":7}]', actual~py.fromPythonString)
 
@@ -98,18 +88,16 @@ return testResult
             }
         */
 
-        expose py
+        .Python~import('json')
 
-        py~import('json')
+        dict = .Python~dict
+        dict['6'] = .Python~int(7)
+        dict['4'] = .Python~int(5)
 
-        dict = py~dict
-        dict['6'] = py~int(7)
-        dict['4'] = py~int(5)
-
-        kwargs = py~kwargs
-        kwargs['sort_keys'] = py~True
-        kwargs['indent'] = py~int(4)
-        actual = py~json.dumps(dict, kwargs)
+        kwargs = .Python~kwargs
+        kwargs['sort_keys'] = .Python~True
+        kwargs['indent'] = .Python~int(4)
+        actual = .Python~json.dumps(dict, kwargs)
 
         nl = .String~nl
         expected = -
@@ -128,13 +116,11 @@ return testResult
             ['foo', {'bar': ['baz', None, 1.0, 2]}]
         */
 
-        expose py
+        .Python~import('json')
+        actual = .Python~json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
 
-        py~import('json')
-        actual = py~json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
-
-        expectedObjChild = py~dict
-        expectedObjChild['bar'] = py['baz', py~None, py~float(1.0), py~int(2)]
-        expectedObj = py['foo', expectedObjChild]
+        expectedObjChild = .Python~dict
+        expectedObjChild['bar'] = .Python['baz', .Python~None, .Python~float(1.0), .Python~int(2)]
+        expectedObj = .Python['foo', expectedObjChild]
 
         self~assertSame(expectedObj~py.fromPythonString, actual~py.fromPythonString)

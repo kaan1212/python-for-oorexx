@@ -30,60 +30,50 @@ return testResult
         sequence[::step]
 */
 ::class slice.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_string
-        expose py
-        string = py~str('hello, world')
-        start = py~int(0)
-        stop = py~int(5)
+        string = .Python~str('hello, world')
+        start = .Python~int(0)
+        stop = .Python~int(5)
 
         actual = string[start, stop]
 
         self~assertSame('hello', unbox(actual))
 
     ::method test_list
-        expose py
-        list = py['h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd']
-        start = py~int(0)
-        stop = py~int(5)
+        list = .Python['h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd']
+        start = .Python~int(0)
+        stop = .Python~int(5)
 
         actual = list[start, stop]
 
         self~assertSame("['h', 'e', 'l', 'l', 'o']", actual~py.fromPythonString)
 
     ::method test_omitStartIndex
-        expose py
-        string = py~str('hello, world')
-        stop = py~int(5)
+        string = .Python~str('hello, world')
+        stop = .Python~int(5)
 
         actual = string[, stop]
 
         self~assertSame('hello', unbox(actual))
 
     ::method test_omitStopIndex
-        expose py
-        string = py~str('hello, world')
-        start = py~int(7)
+        string = .Python~str('hello, world')
+        start = .Python~int(7)
 
-        actual = string[start, py~None]
+        actual = string[start, .Python~None]
 
         self~assertSame('world', unbox(actual))
 
     ::method test_omitStartAndStopIndices
-        expose py
-        string = py~str('hello, world')
+        string = .Python~str('hello, world')
 
-        actual = string[, py~None]
+        actual = string[, .Python~None]
 
         self~assertSame('hello, world', unbox(actual))
 
     ::method test_step
-        expose py
-        string = py~str('hello, world')
-        step = py~int(2)
+        string = .Python~str('hello, world')
+        step = .Python~int(2)
 
         actual = string[, , step]
 

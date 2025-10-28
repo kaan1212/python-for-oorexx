@@ -27,83 +27,73 @@ return testResult
     - empty sequences and collections: '', (), [], {}, set(), range(0)"
 */
 ::class bool.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_hasExactlyOneConstantTrueInstance
-        expose py
-        bool1 = py~True
-        bool2 = py~bool(py~int(1))
+        bool1 = .Python~True
+        bool2 = .Python~bool(.Python~int(1))
 
-        identity1 = py~id(bool1)
-        identity2 = py~id(bool2)
+        identity1 = .Python~id(bool1)
+        identity2 = .Python~id(bool2)
 
         self~assertEquals(unbox(identity1), unbox(identity2))
         self~assertSame(unbox(identity1), unbox(identity2))
 
     ::method test_hasExactlyOneConstantFalseInstance
-        expose py
-        bool1 = py~False
-        bool2 = py~bool(py~int(0))
+        bool1 = .Python~False
+        bool2 = .Python~bool(.Python~int(0))
 
-        identity1 = py~id(bool1)
-        identity2 = py~id(bool2)
+        identity1 = .Python~id(bool1)
+        identity2 = .Python~id(bool2)
 
         self~assertEquals(unbox(identity1), unbox(identity2))
         self~assertSame(unbox(identity1), unbox(identity2))
 
     ::method test_rexxPythonTrueCompatibility
-        expose py
-        self~assertTrue(unbox(py~True))
+        self~assertTrue(unbox(.Python~True))
 
-        self~assertTrue(.true = unbox(py~True))
-        self~assertTrue(.true == unbox(py~True))
+        self~assertTrue(.true = unbox(.Python~True))
+        self~assertTrue(.true == unbox(.Python~True))
 
-        self~assertFalse(.false = unbox(py~True))
-        self~assertFalse(.false == unbox(py~True))
+        self~assertFalse(.false = unbox(.Python~True))
+        self~assertFalse(.false == unbox(.Python~True))
 
-        self~assertTrue(unbox(py~True) = .true)
+        self~assertTrue(unbox(.Python~True) = .true)
 
     ::method test_rexxPythonFalseCompatibility
-        expose py
-        self~assertFalse(unbox(py~False))
+        self~assertFalse(unbox(.Python~False))
 
-        self~assertFalse(.true = unbox(py~False))
-        self~assertFalse(.true == unbox(py~False))
+        self~assertFalse(.true = unbox(.Python~False))
+        self~assertFalse(.true == unbox(.Python~False))
 
-        self~assertTrue(.false = unbox(py~False))
-        self~assertTrue(.false == unbox(py~False))
+        self~assertTrue(.false = unbox(.Python~False))
+        self~assertTrue(.false == unbox(.Python~False))
 
     ::method test_objectsConsideredTrue
-        expose py
-        self~assertTrue(unbox(py~bool(py~True)))
-        self~assertTrue(unbox(py~bool(py~int(1))))
-        self~assertTrue(unbox(py~bool(py~float(1.0))))
-        self~assertTrue(unbox(py~bool(py~complex('1j'))))
+        self~assertTrue(unbox(.Python~bool(.Python~True)))
+        self~assertTrue(unbox(.Python~bool(.Python~int(1))))
+        self~assertTrue(unbox(.Python~bool(.Python~float(1.0))))
+        self~assertTrue(unbox(.Python~bool(.Python~complex('1j'))))
         -- todo: Decimal(0)
         -- todo: Fraction(0, 1)
-        self~assertTrue(unbox(py~bool('a')))
-        self~assertTrue(unbox(py~bool(py~tuple(py~range(py~int(1))))))
-        self~assertTrue(unbox(py~bool(py~list~~append('a'))))
-        dict = py~dict
+        self~assertTrue(unbox(.Python~bool('a')))
+        self~assertTrue(unbox(.Python~bool(.Python~tuple(.Python~range(.Python~int(1))))))
+        self~assertTrue(unbox(.Python~bool(.Python~list~~append('a'))))
+        dict = .Python~dict
         dict['key'] = 'value'
-        self~assertTrue(unbox(py~bool(dict)))
-        self~assertTrue(unbox(py~bool(py~set~~add('a'))))
-        self~assertTrue(unbox(py~bool(py~range(py~int(1)))))
+        self~assertTrue(unbox(.Python~bool(dict)))
+        self~assertTrue(unbox(.Python~bool(.Python~set~~add('a'))))
+        self~assertTrue(unbox(.Python~bool(.Python~range(.Python~int(1)))))
 
     ::method test_objectsConsideredFalse
-        expose py
         -- todo: None
-        self~assertFalse(unbox(py~bool(py~False)))
-        self~assertFalse(unbox(py~bool(py~int(0))))
-        self~assertFalse(unbox(py~bool(py~float(0.0))))
-        self~assertFalse(unbox(py~bool(py~complex('0j'))))
+        self~assertFalse(unbox(.Python~bool(.Python~False)))
+        self~assertFalse(unbox(.Python~bool(.Python~int(0))))
+        self~assertFalse(unbox(.Python~bool(.Python~float(0.0))))
+        self~assertFalse(unbox(.Python~bool(.Python~complex('0j'))))
         -- todo: Decimal(0)
         -- todo: Fraction(0, 1)
-        self~assertFalse(unbox(py~bool('')))
-        self~assertFalse(unbox(py~bool(py~tuple)))
-        self~assertFalse(unbox(py~bool(py~list)))
-        self~assertFalse(unbox(py~bool(py~dict)))
-        self~assertFalse(unbox(py~bool(py~set)))
-        self~assertFalse(unbox(py~bool(py~range(py~int(0)))))
+        self~assertFalse(unbox(.Python~bool('')))
+        self~assertFalse(unbox(.Python~bool(.Python~tuple)))
+        self~assertFalse(unbox(.Python~bool(.Python~list)))
+        self~assertFalse(unbox(.Python~bool(.Python~dict)))
+        self~assertFalse(unbox(.Python~bool(.Python~set)))
+        self~assertFalse(unbox(.Python~bool(.Python~range(.Python~int(0)))))

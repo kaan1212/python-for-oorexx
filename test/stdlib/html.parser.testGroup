@@ -61,23 +61,23 @@ return testResult
 
 ::class MyHTMLParser_print
     ::method init
-        expose py file
-        use arg py, file
+        expose file
+        use arg file
 
     ::method handle_starttag
-        expose py file
+        expose file
         use arg pself, tag, attrs
-        py~print('Encountered a start tag:' unbox(tag), py~kwd('file', file))
+        .Python~print('Encountered a start tag:' unbox(tag), .Python~kwd('file', file))
 
     ::method handle_endtag
-        expose py file
+        expose file
         use arg pself, tag, attrs
-        py~print('Encountered an end tag :' unbox(tag), py~kwd('file', file))
+        .Python~print('Encountered an end tag :' unbox(tag), .Python~kwd('file', file))
 
     ::method handle_data
-        expose py file
+        expose file
         use arg pself, data
-        py~print('Encountered some data  :' unbox(data), py~kwd('file', file))
+        .Python~print('Encountered some data  :' unbox(data), .Python~kwd('file', file))
 
 
 ::class MyHTMLParser_pself
@@ -102,10 +102,6 @@ return testResult
 
 
 ::class MyHTMLParserExtended
-    ::method init
-        expose py
-        use arg py
-
     ::method handle_starttag
         use arg pself, tag, attrs
         say 'Start tag:' unbox(tag)
@@ -127,19 +123,17 @@ return testResult
         say 'Comment  :' unbox(data)
 
     ::method handle_entityref
-        expose py
         use arg pself, name
-        c = py~chr(py~name2codepoint[name])
+        c = .Python~chr(.Python~name2codepoint[name])
         say 'Named ent:' unbox(c)
 
     ::method handle_charref
-        expose py
         use arg pself, name
 
         if unbox(name~startswith('x')) then
-            c = py~chr(py~int(name[py~1, py~None], py~16))
+            c = .Python~chr(.Python~int(name[.Python~1, .Python~None], .Python~16))
         else
-            c = py~chr(py~int(name))
+            c = .Python~chr(.Python~int(name))
 
         say 'Num ent  :' unbox(c)
 
@@ -149,10 +143,6 @@ return testResult
 
 
 ::class html.parser.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new()
-
     ::method startRexxOutputRecording
         expose defaultOutput output
         defaultOutput = .local~output
@@ -164,14 +154,14 @@ return testResult
         .local~output = defaultOutput
 
     ::method test_MyHTMLParser_say
-        expose py output
+        expose output
 
-        py~from('html.parser')~import('HTMLParser')
+        .Python~from('html.parser')~import('HTMLParser')
 
-        py~defineClass(.MyHTMLParser_say, 'HTMLParser')
+        .Python~defineClass(.MyHTMLParser_say, 'HTMLParser')
 
         self~startRexxOutputRecording()
-        parser = py~MyHTMLParser_say()
+        parser = .Python~MyHTMLParser_say()
         parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
         self~stopRexxOutputRecording()
 
@@ -189,13 +179,12 @@ return testResult
         self~assertSame('Encountered an end tag : html', output~pull)
 
     ::method test_MyHTMLParser_queue
-        expose py
-        py~from('html.parser')~import('HTMLParser')
+        .Python~from('html.parser')~import('HTMLParser')
 
         queue = .Queue~new
-        py~defineClass(.MyHTMLParser_queue, 'HTMLParser', queue)
+        .Python~defineClass(.MyHTMLParser_queue, 'HTMLParser', queue)
 
-        parser = py~MyHTMLParser_queue()
+        parser = .Python~MyHTMLParser_queue()
         parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
 
         self~assertSame('Encountered a start tag: html', queue~pull)
@@ -212,14 +201,13 @@ return testResult
         self~assertSame('Encountered an end tag : html', queue~pull)
 
     ::method test_MyHTMLParser_print
-        expose py
-        py~from('html.parser')~import('HTMLParser')
-        py~from('io')~import('StringIO')
+        .Python~from('html.parser')~import('HTMLParser')
+        .Python~from('io')~import('StringIO')
 
-        file = py~StringIO()
-        py~defineClass(.MyHTMLParser_print, 'HTMLParser', py, file)
+        file = .Python~StringIO()
+        .Python~defineClass(.MyHTMLParser_print, 'HTMLParser', file)
 
-        parser = py~MyHTMLParser_print()
+        parser = .Python~MyHTMLParser_print()
         parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
 
         lines = file~getvalue()~splitlines()
@@ -239,13 +227,12 @@ return testResult
         self~assertSame('Encountered an end tag : html', unbox(lines~pop()))
 
     ::method test_MyHTMLParser_pself
-        expose py
-        py~from('html.parser')~import('HTMLParser')
+        .Python~from('html.parser')~import('HTMLParser')
 
         queue = .Queue~new
-        py~defineClass(.MyHTMLParser_pself, 'HTMLParser', queue)
+        .Python~defineClass(.MyHTMLParser_pself, 'HTMLParser', queue)
 
-        parser = py~MyHTMLParser_pself()
+        parser = .Python~MyHTMLParser_pself()
         parser~feed('<html><head><title>Test</title></head><body><h1>Parse me!</h1></body></html>')
 
         self~assertSame('Encountered a start tag: html (1, 0)', queue~pull)
@@ -262,14 +249,14 @@ return testResult
         self~assertSame('Encountered an end tag : html (1, 69)', queue~pull)
 
     ::method test_MyHTMLParserExtended
-        expose py output
-        py~from('html.parser')~import('HTMLParser')
-        py~from('html.entities')~import('name2codepoint')
+        expose output
+        .Python~from('html.parser')~import('HTMLParser')
+        .Python~from('html.entities')~import('name2codepoint')
 
-        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+        .Python~defineClass(.MyHTMLParserExtended, 'HTMLParser')
 
         self~startRexxOutputRecording()
-        parser = py~MyHTMLParserExtended()
+        parser = .Python~MyHTMLParserExtended()
 
         parser~feed('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">')
         self~assertSame('Decl     : DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"', output~pull)
@@ -300,7 +287,7 @@ return testResult
         self~assertSame('Comment  :  a comment ', output~pull)
         self~assertSame('Comment  : [if IE 9]>IE-specific content<![endif]', output~pull)
 
-        parser~convert_charrefs = py~False
+        parser~convert_charrefs = .Python~False
         parser~feed('&gt;&#62;&#x3E;')
         self~assertSame('Named ent: >', output~pull)
         self~assertSame('Num ent  : >', output~pull)
@@ -328,28 +315,28 @@ return testResult
         self~stopRexxOutputRecording()
 
     ::method test_MyHTMLParserExtended_convert_charrefs_default
-        expose py output
-        py~from('html.parser')~import('HTMLParser')
-        py~from('html.entities')~import('name2codepoint')
+        expose output
+        .Python~from('html.parser')~import('HTMLParser')
+        .Python~from('html.entities')~import('name2codepoint')
 
-        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+        .Python~defineClass(.MyHTMLParserExtended, 'HTMLParser')
 
         self~startRexxOutputRecording()
-        parser = py~MyHTMLParserExtended()
+        parser = .Python~MyHTMLParserExtended()
         parser~feed('&gt;&#62;&#x3E;')
         self~stopRexxOutputRecording()
 
         self~assertSame('Data     : >>>', output~pull)
 
     ::method test_MyHTMLParserExtended_convert_charrefs_constructor
-        expose py output
-        py~from('html.parser')~import('HTMLParser')
-        py~from('html.entities')~import('name2codepoint')
+        expose output
+        .Python~from('html.parser')~import('HTMLParser')
+        .Python~from('html.entities')~import('name2codepoint')
 
-        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+        .Python~defineClass(.MyHTMLParserExtended, 'HTMLParser')
 
         self~startRexxOutputRecording()
-        parser = py~MyHTMLParserExtended(py~kwd('convert_charrefs', py~False))
+        parser = .Python~MyHTMLParserExtended(.Python~kwd('convert_charrefs', .Python~False))
         parser~feed('&gt;&#62;&#x3E;')
         self~stopRexxOutputRecording()
 
@@ -358,15 +345,15 @@ return testResult
         self~assertSame('Num ent  : >', output~pull)
 
     ::method test_MyHTMLParserExtended_convert_charrefs_attribute
-        expose py output
-        py~from('html.parser')~import('HTMLParser')
-        py~from('html.entities')~import('name2codepoint')
+        expose output
+        .Python~from('html.parser')~import('HTMLParser')
+        .Python~from('html.entities')~import('name2codepoint')
 
-        py~defineClass(.MyHTMLParserExtended, 'HTMLParser', py)
+        .Python~defineClass(.MyHTMLParserExtended, 'HTMLParser')
 
         self~startRexxOutputRecording()
-        parser = py~MyHTMLParserExtended()
-        parser~convert_charrefs = py~False
+        parser = .Python~MyHTMLParserExtended()
+        parser~convert_charrefs = .Python~False
         parser~feed('&gt;&#62;&#x3E;')
         self~stopRexxOutputRecording()
 

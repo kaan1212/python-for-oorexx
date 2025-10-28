@@ -25,21 +25,20 @@ return testResult
 */
 ::class sqlite3.testGroup public subclass ooTestCase
     ::method setUp
-        expose py database
-        py = .Python~new()
+        expose database
         database = 'test-output/test_sqlite3.db'
 
-        py~from('os')~import('remove')
-        py~from('os.path')~import('isfile')
+        .Python~from('os')~import('remove')
+        .Python~from('os.path')~import('isfile')
 
-        if unbox(py~isfile(database)) then
-            py~remove(database)
+        if unbox(.Python~isfile(database)) then
+            .Python~remove(database)
 
     ::method test
-        expose py database
-        py~import('sqlite3')
+        expose database
+        .Python~import('sqlite3')
 
-        con = py~sqlite3.connect(database)
+        con = .Python~sqlite3.connect(database)
         cur = con~cursor()
 
         cur~execute('CREATE TABLE movie(title, year, score)')

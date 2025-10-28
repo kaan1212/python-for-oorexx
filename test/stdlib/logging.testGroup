@@ -24,14 +24,9 @@ return testResult
     - https://docs.python.org/3/howto/logging.html
 */
 ::class logging.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new()
-
     ::method test
-        expose py
-        py~import('logging')
+        .Python~import('logging')
 
-        logger = py~logging.getLogger(py~__name__)
+        logger = .Python~logging.getLogger(.Python~__name__)
         logger~warning('This warning is printed out on the console.')
         logger~error('This error is printed out on the console.')

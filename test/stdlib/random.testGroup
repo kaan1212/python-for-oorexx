@@ -24,43 +24,35 @@ return testResult
     - https://docs.python.org/3/library/random.html#examples
 */
 ::class random.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new()
-
     ::method test_random
-        expose py
-        py~from('random')~import('random', 'seed')
+        .Python~from('random')~import('random', 'seed')
 
-        py~seed(py~0)
-        actual = py~random()
+        .Python~seed(.Python~0)
+        actual = .Python~random()
 
         self~assertSame(0.8444218515250481, unbox(actual))
 
     ::method test_randrange
-        expose py
-        py~from('random')~import('randrange', 'seed')
+        .Python~from('random')~import('randrange', 'seed')
 
-        py~seed(py~0)
-        actual = py~randrange(py~10)
+        .Python~seed(.Python~0)
+        actual = .Python~randrange(.Python~10)
 
         self~assertSame(6, unbox(actual))
 
     ::method test_choice
-        expose py
-        py~from('random')~import('choice', 'seed')
+        .Python~from('random')~import('choice', 'seed')
 
-        py~seed(py~0)
-        actual = py~choice(py['win', 'lose', 'draw'])
+        .Python~seed(.Python~0)
+        actual = .Python~choice(.Python['win', 'lose', 'draw'])
 
         self~assertSame('lose', unbox(actual))
 
     ::method test_shuffle
-        expose py
-        py~from('random')~import('shuffle', 'seed')
+        .Python~from('random')~import('shuffle', 'seed')
 
-        py~seed(py~0)
-        deck = py~str('ace two three four')~split()
-        py~shuffle(deck)
+        .Python~seed(.Python~0)
+        deck = .Python~str('ace two three four')~split()
+        .Python~shuffle(deck)
 
         self~assertSame("['three', 'ace', 'two', 'four']", deck~py.fromPythonString)

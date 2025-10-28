@@ -20,54 +20,45 @@ return testResult
     https://docs.python.org/3/tutorial/datastructures.html#dictionaries
 */
 ::class dict.testGroup public subclass ooTestCase
-    ::method setUp
-        expose py
-        py = .Python~new
-
     ::method test_newEmptyDict
-        expose py
-        dict = py~dict
-        actual = py~len(dict)
+        dict = .Python~dict
+        actual = .Python~len(dict)
         self~assertSame(0, unbox(actual))
 
     ::method test_set
-        expose py
-        dict = py~dict
-        dict['one'] = py~int(1)
-        dict['two'] = py~int(2)
-        dict['three'] = py~int(3)
+        dict = .Python~dict
+        dict['one'] = .Python~int(1)
+        dict['two'] = .Python~int(2)
+        dict['three'] = .Python~int(3)
 
-        actual = py~len(dict)
+        actual = .Python~len(dict)
 
         self~assertSame(3, unbox(actual))
 
     ::method test_get
-        expose py
-        dict = py~dict
-        dict['one'] = py~int(1)
-        dict['two'] = py~int(2)
-        dict['three'] = py~int(3)
+        dict = .Python~dict
+        dict['one'] = .Python~int(1)
+        dict['two'] = .Python~int(2)
+        dict['three'] = .Python~int(3)
 
         actual = dict['two']
 
         self~assertSame(2, unbox(actual))
 
     ::method test_del
-        expose py
-        dict = py~dict
-        dict['one'] = py~int(1)
-        dict['two'] = py~int(2)
-        dict['three'] = py~int(3)
+        dict = .Python~dict
+        dict['one'] = .Python~int(1)
+        dict['two'] = .Python~int(2)
+        dict['three'] = .Python~int(3)
 
-        py~operator.delitem(dict, 'two')
+        .Python~operator.delitem(dict, 'two')
 
-        self~assertFalse(unbox(py~operator.contains(dict, 'two')))
+        self~assertFalse(unbox(.Python~operator.contains(dict, 'two')))
 
     ::method test_contains
-        expose py
-        dict = py~dict
-        dict['one'] = py~int(1)
-        dict['two'] = py~int(2)
-        dict['three'] = py~int(3)
+        dict = .Python~dict
+        dict['one'] = .Python~int(1)
+        dict['two'] = .Python~int(2)
+        dict['three'] = .Python~int(3)
 
-        self~assertTrue(unbox(py~operator.contains(dict, 'two')))
+        self~assertTrue(unbox(.Python~operator.contains(dict, 'two')))
