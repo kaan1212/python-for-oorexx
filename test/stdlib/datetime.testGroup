@@ -30,8 +30,8 @@ return testResult
             datetime.datetime(2005, 7, 14, 12, 30)
         */
         .Python~import('datetime')
-        d = .Python~datetime.date(.Python~2005, .Python~7, .Python~14)
-        t = .Python~datetime.time(.Python~12, .Python~30)
+        d = .Python~datetime.date(.Python~int(2005), .Python~int(7), .Python~int(14))
+        t = .Python~datetime.time(.Python~int(12), .Python~int(30))
         dt = .Python~datetime.datetime.combine(d, t)
 
         self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(.Python~repr(dt)))
@@ -51,8 +51,8 @@ return testResult
             datetime.datetime(2005, 7, 14, 12, 30)
         */
         .Python~from('datetime')~import('date', 'time', 'datetime')
-        d = .Python~date(.Python~2005, .Python~7, .Python~14)
-        t = .Python~time(.Python~12, .Python~30)
+        d = .Python~date(.Python~int(2005), .Python~int(7), .Python~int(14))
+        t = .Python~time(.Python~int(12), .Python~int(30))
         dt = .Python~datetime.combine(d, t)
 
         self~assertSame('datetime.datetime(2005, 7, 14, 12, 30)', unbox(.Python~repr(dt)))
@@ -70,7 +70,7 @@ return testResult
             datetime.date(1991, 2, 20)
         */
         .Python~from('datetime')~import('date')
-        date = .Python~date(.Python~1991, .Python~2, .Python~20)
+        date = .Python~date(.Python~int(1991), .Python~int(2), .Python~int(20))
 
         self~assertSame('datetime.date(1991, 2, 20)', unbox(.Python~repr(date)))
         self~assertSame(1991, unbox(date~year))
@@ -121,7 +121,7 @@ return testResult
             11235813.0
         */
         .Python~from('datetime')~import('timedelta')
-        duration = .Python~timedelta(.Python~kwd('seconds', .Python~11235813))
+        duration = .Python~timedelta(.Python~kwd('seconds', .Python~int(11235813)))
 
         self~assertSame(130, unbox(duration~days))
         self~assertSame(3813, unbox(duration~seconds))

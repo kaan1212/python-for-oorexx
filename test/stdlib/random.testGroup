@@ -27,7 +27,7 @@ return testResult
     ::method test_random
         .Python~from('random')~import('random', 'seed')
 
-        .Python~seed(.Python~0)
+        .Python~seed(.Python~int(0))
         actual = .Python~random()
 
         self~assertSame(0.8444218515250481, unbox(actual))
@@ -35,15 +35,15 @@ return testResult
     ::method test_randrange
         .Python~from('random')~import('randrange', 'seed')
 
-        .Python~seed(.Python~0)
-        actual = .Python~randrange(.Python~10)
+        .Python~seed(.Python~int(0))
+        actual = .Python~randrange(.Python~int(10))
 
         self~assertSame(6, unbox(actual))
 
     ::method test_choice
         .Python~from('random')~import('choice', 'seed')
 
-        .Python~seed(.Python~0)
+        .Python~seed(.Python~int(0))
         actual = .Python~choice(.Python['win', 'lose', 'draw'])
 
         self~assertSame('lose', unbox(actual))
@@ -51,7 +51,7 @@ return testResult
     ::method test_shuffle
         .Python~from('random')~import('shuffle', 'seed')
 
-        .Python~seed(.Python~0)
+        .Python~seed(.Python~int(0))
         deck = .Python~str('ace two three four')~split()
         .Python~shuffle(deck)
 

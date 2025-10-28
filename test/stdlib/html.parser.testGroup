@@ -131,7 +131,7 @@ return testResult
         use arg pself, name
 
         if unbox(name~startswith('x')) then
-            c = .Python~chr(.Python~int(name[.Python~1, .Python~None], .Python~16))
+            c = .Python~chr(.Python~int(name[.Python~int(1), .Python~None], .Python~int(16)))
         else
             c = .Python~chr(.Python~int(name))
 

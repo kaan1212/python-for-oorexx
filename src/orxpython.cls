@@ -59,10 +59,6 @@
 
     ::method unknown class
         use arg name, args
-
-        if name~dataType() == 'NUM' then
-            return self~callFunction('int', name)
-
         return self~callFunction(name, args)
 
     ::method callFunction class
