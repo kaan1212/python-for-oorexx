@@ -23,10 +23,11 @@
     ::attribute pythonObjectRegistry class get private
 
     ::method activate class
-        expose False True None pythonObjectRegistry
+        use local debug
+        debug = .false
+
         pythonObjectRegistry = .StringTable~new
 
-        debug = .false
         call PyRexx_Initialize 'orxpython', debug
 
         False = self~getPythonProxyObject(PyRexx_CallFunction('get_builtin_constant_id', 'False'))
