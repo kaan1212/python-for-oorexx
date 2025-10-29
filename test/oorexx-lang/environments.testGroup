@@ -37,14 +37,14 @@ return testResult
 
 ::class Test
     ::method setLocal
-        use arg value
+        use strict arg value
         .local~x = value
 
     ::method getLocal
         return .x
 
     ::method setContextPackageLocal
-        use arg value
+        use strict arg value
         .context~package~local~y = value
 
     ::method getContextPackageLocal

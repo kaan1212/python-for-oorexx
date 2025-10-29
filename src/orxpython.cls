@@ -3,7 +3,7 @@
 
 
 ::routine unbox public
-    use arg pythonObject
+    use strict arg pythonObject
 
     type = .Python~type(pythonObject)~__name__~py.fromPythonString
 
@@ -43,7 +43,7 @@
         self~import('operator')
 
     ::method id class
-        use arg pythonObject
+        use strict arg pythonObject
 
         if arg() == 0 then
             return self~id:super
@@ -51,19 +51,19 @@
             return self~callFunction('id', pythonObject)
 
     ::method import class
-        use arg name
+        use strict arg name
         call PyRexx_CallFunction 'invoke_import', name
 
     ::method from class
-        use arg name
+        use strict arg name
         return .PythonFromClause~new(name)
 
     ::method unknown class
-        use arg name, args
+        use strict arg name, args
         return self~callFunction(name, args)
 
     ::method callFunction class
-        use arg name, args
+        use strict arg name, args=.nil, ...
 
         if \ args~isA(.Array) then
             args = arg(2, 'Array')
@@ -73,7 +73,7 @@
         return self~getPythonProxyObject(id)
 
     ::method callMethod class
-        use arg id, name, args
+        use strict arg id, name, args
 
         if \ args~isA(.Array) then
             args = arg(3, 'Array')
@@ -84,7 +84,7 @@
 
     ::method getPythonProxyObject class private
         expose pythonObjectRegistry
-        use arg id
+        use strict arg id
 
         if \ pythonObjectRegistry~hasIndex(id) then
             pythonObjectRegistry[id] = .PythonObject~new(id)
@@ -92,7 +92,7 @@
         return pythonObjectRegistry[id]
 
     ::method kwd class
-        use arg keyword, value
+        use strict arg keyword, value
 
         kwargs = self~kwargs
         kwargs[keyword] = value
@@ -100,7 +100,7 @@
         return kwargs
 
     ::method kwargs class
-        use arg dict=(self~callFunction('dict'))
+        use strict arg dict=(self~callFunction('dict'))
 
         -- Mark this dictionary for storing keyword arguments.
         dict['kwargs'] = 'kwargs'
@@ -118,13 +118,13 @@
 
     ::method escape class
         -- See: https://docs.python.org/3/reference/lexical_analysis.html#escape-sequences
-        use arg string
+        use strict arg string
         return string,
             ~changeStr('\n', .String~nl),
             ~changeStr('\t', .String~tab)
 
     ::method defineClass class
-        use arg rexxClassOrObject, pythonBaseClassName
+        use strict arg rexxClassOrObject, pythonBaseClassName, ...
 
         if rexxClassOrObject~isInstanceOf(.Class) then do
             args = arg(3, 'Array')
@@ -155,7 +155,7 @@
 
     ::method init
         expose id
-        use arg id
+        use strict arg id
 
     ::method objectName
         type = unbox(.Python~type(self)~__name__)
@@ -165,7 +165,7 @@
 
     ::method unknown
         expose id
-        use arg name, args
+        use strict arg name, args
         return .Python~callMethod(id, name, args)
 
     ::method py.fromPythonString
@@ -185,12 +185,12 @@
         return array
 
     ::method '='
-        use arg b
+        use strict arg b
         a = self~makeString
         return a = b
 
     ::method '[]='
-        use arg value, key
+        use strict arg value, key
 
         -- Indexing.
         return .Python~callFunction('operator.setitem', self, key, value)
@@ -210,7 +210,7 @@
             Missing slice items are always filled with None."
             See: https://docs.python.org/3/reference/datamodel.html#object.__length_hint__
         */
-        use arg start=.nil, stop=.nil, step=.nil
+        use strict arg start=.nil, stop=.nil, step=.nil
         slice = .Python~callFunction('slice', start, stop, step)
         return self[slice]
 
@@ -218,7 +218,7 @@
 ::class 'PythonFromClause'
     ::method init
         expose name
-        use arg name
+        use strict arg name
 
     ::method import
         expose name

@@ -26,84 +26,84 @@ return testResult
 */
 ::class MyHTMLParser_say
     ::method handle_starttag
-        use arg pself, tag, attrs
+        use strict arg pself, tag, attrs
         say 'Encountered a start tag:' unbox(tag)
 
     ::method handle_endtag
-        use arg pself, tag
+        use strict arg pself, tag
         say 'Encountered an end tag :' unbox(tag)
 
     ::method handle_data
-        use arg pself, data
+        use strict arg pself, data
         say 'Encountered some data  :' unbox(data)
 
 
 ::class MyHTMLParser_queue
     ::method init
         expose queue
-        use arg queue
+        use strict arg queue
 
     ::method handle_starttag
         expose queue
-        use arg pself, tag, attrs
+        use strict arg pself, tag, attrs
         queue~append('Encountered a start tag:' unbox(tag))
 
     ::method handle_endtag
         expose queue
-        use arg pself, tag
+        use strict arg pself, tag
         queue~append('Encountered an end tag :' unbox(tag))
 
     ::method handle_data
         expose queue
-        use arg pself, data
+        use strict arg pself, data
         queue~append('Encountered some data  :' unbox(data))
 
 
 ::class MyHTMLParser_print
     ::method init
         expose file
-        use arg file
+        use strict arg file
 
     ::method handle_starttag
         expose file
-        use arg pself, tag, attrs
+        use strict arg pself, tag, attrs
         .Python~print('Encountered a start tag:' unbox(tag), .Python~kwd('file', file))
 
     ::method handle_endtag
         expose file
-        use arg pself, tag, attrs
+        use strict arg pself, tag
         .Python~print('Encountered an end tag :' unbox(tag), .Python~kwd('file', file))
 
     ::method handle_data
         expose file
-        use arg pself, data
+        use strict arg pself, data
         .Python~print('Encountered some data  :' unbox(data), .Python~kwd('file', file))
 
 
 ::class MyHTMLParser_pself
     ::method init
         expose queue
-        use arg queue
+        use strict arg queue
 
     ::method handle_starttag
         expose queue
-        use arg pself, tag, attrs
+        use strict arg pself, tag, attrs
         queue~append('Encountered a start tag:' unbox(tag) pself~getpos()~py.fromPythonString)
 
     ::method handle_endtag
         expose queue
-        use arg pself, tag
+        use strict arg pself, tag
         queue~append('Encountered an end tag :' unbox(tag) pself~getpos()~py.fromPythonString)
 
     ::method handle_data
         expose queue
-        use arg pself, data
+        use strict arg pself, data
         queue~append('Encountered some data  :' unbox(data) pself~getpos()~py.fromPythonString)
 
 
 ::class MyHTMLParserExtended
     ::method handle_starttag
-        use arg pself, tag, attrs
+        use strict arg pself, tag, attrs
         say 'Start tag:' unbox(tag)
 
         do attr over attrs
@@ -111,24 +111,24 @@ return testResult
         end
 
     ::method handle_endtag
-        use arg pself, tag
+        use strict arg pself, tag
         say 'End tag  :' unbox(tag)
 
     ::method handle_data
-        use arg pself, data
+        use strict arg pself, data
         say 'Data     :' unbox(data)
 
     ::method handle_comment
-        use arg pself, data
+        use strict arg pself, data
         say 'Comment  :' unbox(data)
 
     ::method handle_entityref
-        use arg pself, name
+        use strict arg pself, name
         c = .Python~chr(.Python~name2codepoint[name])
         say 'Named ent:' unbox(c)
 
     ::method handle_charref
-        use arg pself, name
+        use strict arg pself, name
 
         if unbox(name~startswith('x')) then
             c = .Python~chr(.Python~int(name[.Python~int(1), .Python~None], .Python~int(16)))
@@ -138,7 +138,7 @@ return testResult
         say 'Num ent  :' unbox(c)
 
     ::method handle_decl
-        use arg pself, data
+        use strict arg pself, data
         say 'Decl     :' unbox(data)
 
 
