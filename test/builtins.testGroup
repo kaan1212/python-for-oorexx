@@ -33,7 +33,7 @@ return testResult
         self~assertTrue(unbox(actual))
 
     -- Return True if any element of the iterable is true.
-    ::method test_any
+    ::method _test_any
         iterable = .Python~py.listOf(.Python~True, .Python~False .Python~False)
         actual = .Python~any(iterable)
         self~assertTrue(unbox(actual))

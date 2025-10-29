@@ -161,7 +161,10 @@
         type = unbox(.Python~type(self)~__name__)
         id = unbox(.Python~id(self))
 
-        return type || '@' || id
+        numeric digits 20
+        hex = id~d2x(16)~insert('_', 8)
+
+        return type || '@' || hex
 
     ::method unknown
         expose id

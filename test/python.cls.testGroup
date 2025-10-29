@@ -18,6 +18,12 @@ return testResult
     The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
 */
 ::class python.cls.testGroup public subclass ooTestCase
+    ::method test_objectName
+        actual = .Python~str('hello, world')~objectName
+
+        re = .RegularExpression~new('str@[:xdigit:]{8}_[:xdigit:]{8}')
+        self~assertTrue(re~match(actual))
+
     ::method test_escape_linefeed
         actual = .Python~escape('hello, world\n')
         self~assertSame('hello, world' || '0a'x, actual)
