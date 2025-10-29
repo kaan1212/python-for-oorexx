@@ -3,16 +3,21 @@
 
 
 ::routine unbox public
-    use strict arg pythonObject
+    use strict arg object
 
-    type = .Python~type(pythonObject)~__name__~py.fromPythonString
+    if object~isInstanceOf(.PythonObject) then do
+        pythonObject = object
+        type = .Python~type(pythonObject)~__name__~py.fromPythonString
 
-    select case type
-        when 'NoneType' then return .nil
-        when 'bool' then return pythonObject~py.fromPythonString == 'True'
-        when 'int', 'float', 'str' then return pythonObject~py.fromPythonString
-        otherwise return pythonObject
+        select case type
+            when 'NoneType' then return .nil
+            when 'bool' then return pythonObject~py.fromPythonString == 'True'
+            when 'int', 'float', 'str' then return pythonObject~py.fromPythonString
+            otherwise return pythonObject
+        end
     end
+
+    return object
 
 
 ::class 'Python' public
@@ -150,7 +155,7 @@
         call PyRexx_DefineClass rexxObject, rexxClassName, pythonBaseClassName, pythonMethodNamesUnboxed
 
 
-::class 'PythonObject'
+::class 'PythonObject' public
     ::attribute id get
 
     ::method init

@@ -18,6 +18,32 @@ return testResult
     The test runner raises an exception if there is not at least one multi-line comment present anywhere in this file.
 */
 ::class python.cls.testGroup public subclass ooTestCase
+    ::method test_unbox_pythonObject_returns_ooRexxObject
+        self~assertNil(unbox(.Python~None))
+        self~assertTrue(unbox(.Python~True))
+        self~assertFalse(unbox(.Python~False))
+        self~assertSame(12, unbox(.Python~int(12)))
+        self~assertSame(3.14, unbox(.Python~float(3.14)))
+        self~assertSame('hello, world', unbox(.Python~str('hello, world')))
+
+    ::method test_unbox_pythonObject_returns_pythonObject
+        self~assertTrue(unbox(.Python~complex('+1.23'))~isInstanceOf(.PythonObject))
+        self~assertTrue(unbox(.Python~list)~isInstanceOf(.PythonObject))
+        self~assertTrue(unbox(.Python~tuple)~isInstanceOf(.PythonObject))
+        self~assertTrue(unbox(.Python~set)~isInstanceOf(.PythonObject))
+        self~assertTrue(unbox(.Python~dict)~isInstanceOf(.PythonObject))
+
+    ::method test_unbox_ooRexxObject_returns_ooRexxObject
+        self~assertNil(unbox(.nil))
+        self~assertTrue(unbox(.true))
+        self~assertFalse(unbox(.false))
+        self~assertSame(12, unbox(12))
+        self~assertSame(3.14, unbox(3.14))
+        self~assertSame('hello, world', unbox('hello, world'))
+
+        self~assertEquals(.Array~new, unbox(.Array~new))
+        self~assertEquals(.Array~of(1, 2, 3), unbox(.Array~of(1, 2, 3)))
+
     ::method test_objectName
         actual = .Python~str('hello, world')~objectName
 
